@@ -2,3 +2,25 @@ body
 {
   /* Get Some */
 }
+
+.squares
+{
+  width: 33%;
+  height: 33vh;
+  background: grey;
+  border-style: solid;
+  border-color: red;
+}
+
+.row
+{
+  margin-left: 0px;
+}
+
+canvas
+{
+  border: 8px solid green;
+  width: 100%;
+  height: 100%;
+}
+
