@@ -12,20 +12,5 @@ function testX()
   ctx.moveTo(285, 10);
   ctx.lineTo(10, 135);
   ctx.stroke();
-  //intervalID = window.setInterval(animateX, 1, ctx); 
 }
 
-function animateX(context)
-{
-  console.log("xCoor: " + XCtr);
-  console.log("yCoor: " + YCtr);
-  if (XCtr < 10 || YCtr > 135)
-  {
-    clearInterval(intervalID);
-    return;
-  }
-  XCtr--;
-  YCtr++;
-  context.lineTo(XCtr, YCtr);
-  context.stroke();
-}
