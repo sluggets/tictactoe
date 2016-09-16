@@ -18,5 +18,23 @@ body
   width: 60%;
   padding-bottom: 60%;
   background: gold;
+  position: relative;
 }
 
+.minibox
+{
+  background: green;
+  border: 3px solid purple;
+  height: 20%;
+  width: 20%;
+  position: absolute;
+  float: left;
+}
+
+.segebox
+{
+  background: red;
+  border: 3px solid green;
+  height: 20%;
+  width: 20%;
+}
