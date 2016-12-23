@@ -73,6 +73,7 @@ function displayMove(selection, usrChce)
   }
   else if (usrChce == 2)
   {
+    recordMove(play.children[0].id);
     play.children[0].style.display = "block";
   }
   else
@@ -136,12 +137,45 @@ function recordMove(playLocation)
       break;
   }
   console.log("playRecord");
-  console.log(playRecord);
+  for (var item in playRecord)
+  {
+    console.log(playRecord[item]);
+    console.log("length");
+    console.log(playRecord[item].length);
+  }
 }
 
 function checkWinningCondition()
 {
+  // Need to implement loop with counter so 
+  // that counter increments every time an 
+  // array contains 3 elements AND the sum
+  // of those elements is not a winning sum.
+  // if counter gets to 8 with NO winning sum,
+  // then a tie is declared
   //TODO
+  var ctr = 0;
+  for (var item in playRecord)
+  {
+    var winningSum = 0;
+    if (playRecord[item].length == 3)
+    {
+      ctr++;
+      winningSum = playRecord[item][0] + playRecord[item][1] + playRecord[item][2];
+      if (winningSum == 3 ||
+          winningSum == 6)
+      {
+        // for the win!
+        triggerEndGame();
+      }
+    }
+  }
+
+  if (ctr == 8)
+  {
+    // for the tie
+    triggerEndGame();
+  }
 }
 
 function playComputerTurn()
