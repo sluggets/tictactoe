@@ -1,0 +1,106 @@
+body
+{
+  /* Get Some */
+}
+
+.grid
+{
+  width: 243px;
+  height: 300px;
+  background: red;
+  margin: 0 auto;
+}
+ 
+
+.grid-item 
+{ 
+  width: 80px; 
+  height: 80px;
+  background: green;
+  margin-bottom: 1.5px;
+  font-size: 75px;
+  text-align: center;
+}
+
+
+.squares
+{
+  width: 33%;
+  height: 33vh;
+  background: grey;
+  border-style: solid;
+  border-color: red;
+}
+
+#ttt-container
+{
+  border: 8px solid red;
+  width: 60%;
+  padding-bottom: 60%;
+  background: gold;
+  position: relative;
+}
+
+.minibox
+{
+  background: green;
+  border: 3px solid purple;
+  height: 20%;
+  width: 20%;
+  position: absolute;
+  float: left;
+}
+
+.segebox
+{
+  background: red;
+  border: 3px solid green;
+  height: 20%;
+  width: 20%;
+}
+
+.boxes
+{
+  display: none;
+}
+
+/*.choose
+{
+  position: fixed;
+  z-index: 1;
+  width: 25%;
+  height: 25%;
+  background-color: rgba(0, 0, 0, 0.4);;
+  left: 25vw;
+  top: 25vh;
+}*/
+
+
+.choose
+{
+  position: fixed;
+  z-index: 1;
+  width: 150px;
+  height: 25%;
+  background-color: rgba(0, 0, 0, 0.6);;
+  left: 45vw;
+  top: 25vh;
+  color: white;
+  padding: 7px;
+  display: block;
+}
+
+@media (max-width: 600px)
+{
+  .choose
+  {
+    left: 28vw;
+  }
+
+}
+
+#buttons
+{
+  text-align:center;
+}
+

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+    <title>Tic Tac Toe</title>
+    <!--<link rel="stylesheet" 
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"   
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+          crossorigin="anonymous">-->
+    <script src="https://unpkg.com/masonry-layout@4.1/dist/masonry.pkgd.min.js"></script>
+    <script src="js/ttt.js"></script>
+    <link rel="stylesheet" href="css/ttt.css">
+  </head>
+  <body>
+    <div id="choose1" class="choose">
+        <p>Wanna be X or O?</p>
+        <div id="buttons">
+          <button class="choose-button" id="x-button">X</button>
+          <button class="choose-button" id="o-button">O</button>
+        </div>
+    </div>
+    <div class="grid">
+      <div class="grid-item" onclick="displayMove(event,userChoice)"><div id="x1" class="boxes">X</div><div id="o1" class="boxes">O</div></div>
+      <div class="grid-item" onclick="displayMove(event,userChoice)"><div id="x2" class="boxes">X</div><div id="o2" class="boxes">O</div></div>
+      <div class="grid-item" onclick="displayMove(event,userChoice)"><div id="x3" class="boxes">X</div><div id="o3" class="boxes">O</div></div>
+      <div class="grid-item" onclick="displayMove(event,userChoice)"><div id="x4" class="boxes">X</div><div id="o4" class="boxes">O</div></div>
+      <div class="grid-item" onclick="displayMove(event,userChoice)"><div id="x5" class="boxes">X</div><div id="o5" class="boxes">O</div></div>
+      <div class="grid-item" onclick="displayMove(event,userChoice)"><div id="x6" class="boxes">X</div><div id="o6" class="boxes">O</div></div>
+      <div class="grid-item" onclick="displayMove(event,userChoice)"><div id="x7" class="boxes">X</div><div id="o7" class="boxes">O</div></div>
+      <div class="grid-item" onclick="displayMove(event,userChoice)"><div id="x8" class="boxes">X</div><div id="o8" class="boxes">O</div></div>
+      <div class="grid-item" onclick="displayMove(event,userChoice)"><div id="x9" class="boxes">X</div><div id="o9" class="boxes">O</div></div>
+    </div>
+  </body>
+</html>
