@@ -162,11 +162,14 @@ function checkWinningCondition()
     {
       ctr++;
       winningSum = playRecord[item][0] + playRecord[item][1] + playRecord[item][2];
+      console.log("sum of three is...");
+      console.log(winningSum);
       if (winningSum == 3 ||
           winningSum == 6)
       {
         // for the win!
-        triggerEndGame();
+        var winner = winningSum == 3 ? 'O' : 'X';
+        triggerEndGame(winner);
       }
     }
   }
@@ -174,7 +177,7 @@ function checkWinningCondition()
   if (ctr == 8)
   {
     // for the tie
-    triggerEndGame();
+    triggerEndGame('tie');
   }
 }
 
@@ -183,8 +186,9 @@ function playComputerTurn()
   //TODO
 }
 
-function triggerEndGame()
+function triggerEndGame(str)
 {
+  console.log("RESULT IS:   " + str);
   //TODO
   displayNewGameOption();
 }
