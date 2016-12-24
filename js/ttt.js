@@ -168,7 +168,7 @@ function checkWinningCondition()
           winningSum == 6)
       {
         // for the win!
-        var winner = winningSum == 3 ? 'O' : 'X';
+        var winner = winningSum == 3 ? 'o-wins' : 'x-wins';
         triggerEndGame(winner);
       }
     }
@@ -189,6 +189,8 @@ function playComputerTurn()
 function triggerEndGame(str)
 {
   console.log("RESULT IS:   " + str);
+  var winningElem = document.getElementById(str); 
+  winningElem.style.display = "block";
   //TODO
   displayNewGameOption();
 }
