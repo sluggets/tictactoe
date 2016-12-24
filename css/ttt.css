@@ -104,3 +104,12 @@ body
   text-align:center;
 }
 
+#endgame
+{
+  text-align: center;
+}
+
+.winner
+{
+  display: none;
+}
