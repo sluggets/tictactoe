@@ -38,6 +38,27 @@ function removePrompt()
 {
   var prompt = document.getElementById('choose1');
   prompt.style.display = 'none';  
+
+  var winningElems = document.getElementsByClassName("winner");
+  
+  for (var i = 0; i < 3; i++)
+  {
+    winningElems[i].style.display = "none";
+  }
+
+  var boxes = document.getElementsByClassName("boxes");
+  var size = boxes.length;
+ 
+  for (var i = 0; i < size; i++)
+  {
+    boxes[i].style.display = "none";
+  } 
+}
+
+function restorePrompt()
+{
+  var prompt = document.getElementById('choose1');
+  prompt.style.display = 'block';
 }
 
 function displayMove(selection, usrChce)
@@ -191,10 +212,28 @@ function triggerEndGame(str)
   console.log("RESULT IS:   " + str);
   var winningElem = document.getElementById(str); 
   winningElem.style.display = "block";
+  resetGame();
   //TODO
   displayNewGameOption();
 }
 
+function resetGame()
+{
+  /*var boxes = document.getElementsByClassName("boxes");
+  var size = boxes.length;
+ 
+  for (var i = 0; i < size; i++)
+  {
+    boxes[i].style.display = "none";
+  }*/ 
+  
+  for (var i = 0; i < 8; i++)
+  {
+    playRecord[i] = [];
+  } 
+
+  restorePrompt();
+}
 function displayNewGameOption()
 {
   //TODO
