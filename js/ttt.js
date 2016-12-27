@@ -82,7 +82,7 @@ function displayMove(selection, usrChce)
        {
          return;
        }*/
-    recordMove(play.children[1].id);
+    recordMove(play.children[1].id, "human");
     console.log("id");
     console.log(play.children[1].id)
     console.log("before display css->");
@@ -94,7 +94,7 @@ function displayMove(selection, usrChce)
   }
   else if (usrChce == 2)
   {
-    recordMove(play.children[0].id);
+    recordMove(play.children[0].id, "human");
     play.children[0].style.display = "block";
   }
   else
@@ -106,55 +106,73 @@ function displayMove(selection, usrChce)
   playComputerTurn();
 }
 
-function recordMove(playLocation)
+function recordMove(playLocation, whichPlayer)
 {
-  var loc = playLocation.slice(1);  
+  var loc = '';
+  var playType = '';
+  if (playLocation.length == 2)
+  {
+    loc = playLocation.slice(1);  
+  }
+  else
+  {
+    loc = playLocation;
+  }
+
+  if (whichPlayer == "human")
+  {
+    playType = userChoice;
+  }
+  else
+  {
+    playType = cpuChoice;
+  }
   console.log("inside recordMove()");
   console.log(loc);
   
   switch (loc)
   {
     case "1":
-      playRecord[0].push(userChoice);    
-      playRecord[3].push(userChoice);
-      playRecord[7].push(userChoice);
+      playRecord[0].push(playType);    
+      playRecord[3].push(playType);
+      playRecord[7].push(playType);
       break;
     case "2":
-      playRecord[1].push(userChoice);    
-      playRecord[3].push(userChoice);
+      playRecord[1].push(playType);    
+      playRecord[3].push(playType);
       break;
     case "3":
-      playRecord[3].push(userChoice);    
-      playRecord[2].push(userChoice);
-      playRecord[6].push(userChoice);
+      playRecord[3].push(playType);    
+      playRecord[2].push(playType);
+      playRecord[6].push(playType);
       break;
     case "4":
-      playRecord[0].push(userChoice);    
-      playRecord[4].push(userChoice);
+      playRecord[0].push(playType);    
+      playRecord[4].push(playType);
       break;
     case "5":
-      playRecord[1].push(userChoice);    
-      playRecord[4].push(userChoice);    
-      playRecord[6].push(userChoice);
-      playRecord[7].push(userChoice);
+      playRecord[1].push(playType);    
+      playRecord[4].push(playType);    
+      playRecord[6].push(playType);
+      playRecord[7].push(playType);
       break;
     case "6":
-      playRecord[2].push(userChoice);    
-      playRecord[4].push(userChoice);
+      playRecord[2].push(playType);    
+      playRecord[4].push(playType);
       break;
     case "7":
-      playRecord[0].push(userChoice);    
-      playRecord[5].push(userChoice);
-      playRecord[6].push(userChoice);
+      playRecord[0].push(playType);    
+      playRecord[5].push(playType);
+      playRecord[6].push(playType);
       break;
     case "8":
-      playRecord[1].push(userChoice);    
-      playRecord[5].push(userChoice);
+      playRecord[1].push(playType);    
+      playRecord[5].push(playType);
       break;
     case "9":
-      playRecord[2].push(userChoice);    
-      playRecord[5].push(userChoice);
-      playRecord[7].push(userChoice);
+      playRecord[2].push(playType);    
+      playRecord[5].push(playType);
+      playRecord[7].push(playType);
       break;
   }
   console.log("playRecord");
