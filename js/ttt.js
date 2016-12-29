@@ -1,8 +1,11 @@
 document.addEventListener("DOMContentLoaded", function() {
-  playRecord = [[], [], [], [],
-                [], [], [], []];
-  console.log(playRecord);
+  humanPlayRecord =    [[], [], [], [],
+                   [], [], [], []];
+  cpuPlayRecord = [[], [], [], [],
+                   [], [], [], []];
+  console.log(humanPlayRecord);
   userChoice = 3;
+  cpuChoice = 4;
   var elem = document.querySelector('.grid');
   
   var msnry = new Masonry(elem, {
@@ -19,6 +22,7 @@ document.addEventListener("DOMContentLoaded", function() {
   xchoice.addEventListener("click", function() {
     removePrompt();
     userChoice = 2; 
+    cpuChoice = 1;
     console.log("User chose: ");
     console.log(userChoice); 
   });
@@ -28,6 +32,7 @@ document.addEventListener("DOMContentLoaded", function() {
   ochoice.addEventListener("click", function() {
     removePrompt();
     userChoice = 1;
+    cpuChoice = 2;
     console.log("User chose: ");
     console.log(userChoice); 
   });
@@ -66,6 +71,7 @@ function displayMove(selection, usrChce)
   // may have to check if display is block already
   // by computer player
   var  play = selection.target;
+  var loc;
   if (play.children.length == 0)
   {
     return;
@@ -82,9 +88,10 @@ function displayMove(selection, usrChce)
        {
          return;
        }*/
-    recordMove(play.children[1].id, "human");
-    console.log("id");
-    console.log(play.children[1].id)
+    loc = play.children[1].id;
+    recordMove(loc, "human");
+    console.log("loc->id");
+    console.log(loc)
     console.log("before display css->");
     console.log(play.children[1].style.display.length); 
     play.children[1].style.display = "block";
@@ -94,7 +101,8 @@ function displayMove(selection, usrChce)
   }
   else if (usrChce == 2)
   {
-    recordMove(play.children[0].id, "human");
+    loc = play.children[0].id;
+    recordMove(loc, "human");
     play.children[0].style.display = "block";
   }
   else
@@ -102,14 +110,15 @@ function displayMove(selection, usrChce)
     return;
   }
 
-  checkWinningCondition();
-  playComputerTurn();
+  checkWinningCondition("human");
+  playComputerTurn(loc);
 }
 
 function recordMove(playLocation, whichPlayer)
 {
   var loc = '';
   var playType = '';
+  var playRecord;
   if (playLocation.length == 2)
   {
     loc = playLocation.slice(1);  
@@ -122,10 +131,12 @@ function recordMove(playLocation, whichPlayer)
   if (whichPlayer == "human")
   {
     playType = userChoice;
+    playRecord = humanPlayRecord;
   }
   else
   {
     playType = cpuChoice;
+    playRecord = cpuPlayRecord;
   }
   console.log("inside recordMove()");
   console.log(loc);
@@ -184,7 +195,7 @@ function recordMove(playLocation, whichPlayer)
   }
 }
 
-function checkWinningCondition()
+function checkWinningCondition(whichPlayer)
 {
   // Need to implement loop with counter so 
   // that counter increments every time an 
@@ -192,7 +203,16 @@ function checkWinningCondition()
   // of those elements is not a winning sum.
   // if counter gets to 8 with NO winning sum,
   // then a tie is declared
-  //TODO
+  var playRecord;
+  if (whichPlayer == "human")
+  {
+    playRecord = humanPlayRecord;
+  }
+  else
+  {
+    playRecord = cpuPlayRecord;
+  }
+
   var ctr = 0;
   for (var item in playRecord)
   {
@@ -220,8 +240,22 @@ function checkWinningCondition()
   }
 }
 
-function playComputerTurn()
+function playComputerTurn(humanLocId)
 {
+  var letter;
+  if (cpuChoice == 2)
+  {
+    letter = 'x';
+  }
+  else
+  {
+    letter = 'o';
+  }
+
+  // humLoc is just the number, humanLocId is full id
+  var humLoc =  humanLocId.slice(-1);
+  console.log("inside playCompTurn()-> humLoc");
+  console.log(humLoc);
   //TODO
 }
 
@@ -247,10 +281,16 @@ function resetGame()
   
   for (var i = 0; i < 8; i++)
   {
-    playRecord[i] = [];
+    humanPlayRecord[i] = [];
+    cpuPlayRecord[i] = [];
   } 
 
   restorePrompt();
+}
+
+function checkCssStatus(locId)
+{
+  
 }
 function displayNewGameOption()
 {
