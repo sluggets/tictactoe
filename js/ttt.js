@@ -3,6 +3,8 @@ document.addEventListener("DOMContentLoaded", function() {
                    [], [], [], []];
   cpuPlayRecord = [[], [], [], [],
                    [], [], [], []];
+
+  threesBlocked = [];
   console.log(humanPlayRecord);
   userChoice = 3;
   cpuChoice = 4;
@@ -130,8 +132,9 @@ function recordMove(playLocation, whichPlayer)
   }
   else
   {
-    loc = playLocation;
+    loc = playLocation.toString();
   }
+
 
   if (whichPlayer == "human")
   {
@@ -140,8 +143,12 @@ function recordMove(playLocation, whichPlayer)
   }
   else
   {
+    console.log("recording move for cpu!");
     playType = cpuChoice;
     playRecord = cpuPlayRecord;
+    console.log("INSIDE recordMove()->loc: " + loc);
+    console.log("PLAYTYPE: " + playType);
+    console.log("userChoice: " + userChoice);
   }
   console.log("inside recordMove()");
   console.log(loc);
@@ -231,8 +238,13 @@ function checkWinningCondition(whichPlayer)
            winningSum == 2))
       {
         var indexNum = playRecord.indexOf(playRecord[item]) + 1;
-        mandatoryPlay = indexNum;
-        console.log("TRIGGERED!!" + indexNum);
+        if (threesBlocked.indexOf(indexNum) == -1)
+        {
+          mandatoryPlay = indexNum;
+          console.log("TRIGGERED!!" + indexNum);
+        }
+        //threesBlocked.push(4);
+        //console.log("threesBlocked: " + threesBlocked);
       }
     }
 
@@ -264,41 +276,62 @@ function playComputerTurn(humanLocId)
 
   if (mandatoryPlay > 0)
   {
+    console.log("proceeding to block: " + mandatoryPlay);
     switch (mandatoryPlay)
     {
       case 1:
         blockTheThree([1,4,7]); 
-        
-        //TODO
         break;
       case 2:
-        //TODO
+        blockTheThree([2,5,8]); 
         break;
       case 3:
-        //TODO
+        blockTheThree([3,6,9]); 
         break;
       case 4:
-        //TODO
+        blockTheThree([1,2,3]); 
         break;
       case 5:
-        //TODO
+        blockTheThree([4,5,6]); 
         break;
       case 6:
-        //TODO
+        blockTheThree([7,8,9]); 
         break;
       case 7:
-        //TODO
+        blockTheThree([3,5,7]); 
         break;
       case 8:
-        //TODO
+        blockTheThree([1,5,9]); 
         break;
     } 
+    threesBlocked.push(mandatoryPlay);
+    mandatoryPlay = 0;    
+    console.log("threesBlocked: " + threesBlocked);
+    return;
   }
+
   // humLoc is just the number, humanLocId is full id
   var humLoc =  humanLocId.slice(-1);
   console.log("inside playCompTurn()-> humLoc");
-  console.log(humLoc);
-  //TODO
+  console.log(humanLocId);
+  
+  var center = document.getElementById(userChar + 5);
+  if (center.style.display == "none")
+  {
+    var playCenter = document.getElementById(cpuChar + 5);
+    playCenter.style.display = "block";
+    recordMove(5, "cpu");
+    threesBlocked.push(7, 8, 2, 5);
+  }
+  else
+  {
+    //reactToCorner();
+    findFirstEmpty();
+  }
+  /*switch (humLoc)
+  {
+    cas
+  }*/ 
 }
 
 function triggerEndGame(str)
@@ -308,7 +341,7 @@ function triggerEndGame(str)
   winningElem.style.display = "block";
   resetGame();
   //TODO
-  displayNewGameOption();
+  //displayNewGameOption();
 }
 
 function resetGame()
@@ -342,15 +375,45 @@ function blockTheThree(idArr)
       console.log("cpuChar is: " + cpuChar + idArr[id]);
       var playLoc = document.getElementById(cpuChar + idArr[id]);
       console.log("display for CPU is: " + playLoc.style.display);
+      console.log("CPU" + cpuChar + idArr[id]);
       if (playLoc.style.dislay !== "block")
       {
         playLoc.style.display = "block";
+        recordMove(idArr[id]);
         return;
       }
     }
   }  
 }
-function displayNewGameOption()
+
+function findFirstEmpty()
 {
-  //TODO
+  for (var i = 1; i < 9; i++)
+  {
+    var boxId = userChar + i; 
+    console.log("boxId: " + boxId);
+    var boxLoc = document.getElementById(boxId);
+
+    var cpuId = cpuChar + i;
+    var cpuLoc = document.getElementById(cpuId);
+    if (boxLoc.style.display == "none" &&
+        cpuLoc.style.display == "none")
+    {
+      cpuLoc.style.display = "block";
+      recordMove(i, "cpu");
+      return;
+    }
+    
+  }
 }
+
+function reactToCorner()
+{
+
+}
+
+// remember to add to winning condition
+// method to see of all boxes are occupied
+// by Xs and Os
+
+// also cpuPlayRecord is not recording cpu plays
