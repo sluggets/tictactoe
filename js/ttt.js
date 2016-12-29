@@ -267,7 +267,7 @@ function playComputerTurn(humanLocId)
     switch (mandatoryPlay)
     {
       case 1:
-        checkCssStatus([1,4,7]); 
+        blockTheThree([1,4,7]); 
         
         //TODO
         break;
@@ -330,7 +330,7 @@ function resetGame()
   restorePrompt();
 }
 
-function checkCssStatus(idArr)
+function blockTheThree(idArr)
 {
   for (var id in idArr)
   {
