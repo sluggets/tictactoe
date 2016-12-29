@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function() {
   console.log(humanPlayRecord);
   userChoice = 3;
   cpuChoice = 4;
-  alarm = false;
+  mandatoryPlay = 0;
   var elem = document.querySelector('.grid');
   
   var msnry = new Masonry(elem, {
@@ -24,6 +24,8 @@ document.addEventListener("DOMContentLoaded", function() {
     removePrompt();
     userChoice = 2; 
     cpuChoice = 1;
+    userChar = 'x';
+    cpuChar = 'o';
     console.log("User chose: ");
     console.log(userChoice); 
   });
@@ -34,6 +36,8 @@ document.addEventListener("DOMContentLoaded", function() {
     removePrompt();
     userChoice = 1;
     cpuChoice = 2;
+    userChar = 'o';
+    cpuChar = 'x';
     console.log("User chose: ");
     console.log(userChoice); 
   });
@@ -226,8 +230,9 @@ function checkWinningCondition(whichPlayer)
           (userChoice == 1 &&
            winningSum == 2))
       {
-        alarm = true;
-        console.log("TRIGGERED!!");
+        var indexNum = playRecord.indexOf(playRecord[item]) + 1;
+        mandatoryPlay = indexNum;
+        console.log("TRIGGERED!!" + indexNum);
       }
     }
 
@@ -256,16 +261,39 @@ function checkWinningCondition(whichPlayer)
 
 function playComputerTurn(humanLocId)
 {
-  var letter;
-  if (cpuChoice == 2)
-  {
-    letter = 'x';
-  }
-  else
-  {
-    letter = 'o';
-  }
 
+  if (mandatoryPlay > 0)
+  {
+    switch (mandatoryPlay)
+    {
+      case 1:
+        checkCssStatus([1,4,7]); 
+        
+        //TODO
+        break;
+      case 2:
+        //TODO
+        break;
+      case 3:
+        //TODO
+        break;
+      case 4:
+        //TODO
+        break;
+      case 5:
+        //TODO
+        break;
+      case 6:
+        //TODO
+        break;
+      case 7:
+        //TODO
+        break;
+      case 8:
+        //TODO
+        break;
+    } 
+  }
   // humLoc is just the number, humanLocId is full id
   var humLoc =  humanLocId.slice(-1);
   console.log("inside playCompTurn()-> humLoc");
@@ -302,9 +330,25 @@ function resetGame()
   restorePrompt();
 }
 
-function checkCssStatus(locId)
+function checkCssStatus(idArr)
 {
-  
+  for (var id in idArr)
+  {
+    console.log("ID-> " + idArr[id]);
+    var divBox = document.getElementById(userChar + idArr[id]);
+    console.log("divBox style-> " + divBox.style.display);
+    if (divBox.style.display == "none")
+    {
+      console.log("cpuChar is: " + cpuChar + idArr[id]);
+      var playLoc = document.getElementById(cpuChar + idArr[id]);
+      console.log("display for CPU is: " + playLoc.style.display);
+      if (playLoc.style.dislay !== "block")
+      {
+        playLoc.style.display = "block";
+        return;
+      }
+    }
+  }  
 }
 function displayNewGameOption()
 {
