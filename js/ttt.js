@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", function() {
   console.log(humanPlayRecord);
   userChoice = 3;
   cpuChoice = 4;
+  alarm = false;
   var elem = document.querySelector('.grid');
   
   var msnry = new Masonry(elem, {
@@ -18,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function() {
   var ochoice = document.getElementById("o-button");
 
   // listens for user choosing 'X', sets global
-  // variable to reflect that
+  // variable to reflect that, also sets cpuChoice
   xchoice.addEventListener("click", function() {
     removePrompt();
     userChoice = 2; 
@@ -28,7 +29,7 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 
   // listens for user choosing 'O', sets global
-  // variable to reflect that
+  // variable to reflect that, also sets cpuChoice
   ochoice.addEventListener("click", function() {
     removePrompt();
     userChoice = 1;
@@ -217,6 +218,19 @@ function checkWinningCondition(whichPlayer)
   for (var item in playRecord)
   {
     var winningSum = 0;
+    if (playRecord[item].length == 2)
+    {
+      winningSum = playRecord[item][0] + playRecord[item][1];
+      if ((userChoice == 2 &&
+           winningSum == 4) ||
+          (userChoice == 1 &&
+           winningSum == 2))
+      {
+        alarm = true;
+        console.log("TRIGGERED!!");
+      }
+    }
+
     if (playRecord[item].length == 3)
     {
       ctr++;
