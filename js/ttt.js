@@ -409,8 +409,19 @@ function findFirstEmpty()
 
 function reactToCorner()
 {
+  var oneId = userChar + 1;
+  var cornerOne = document.getElementById(oneId);
 
+  var threeId = userChar + 3;
+  var cornerThree = document.getElementById(threeId);
+
+  var sevenId = userChar + 7;
+  var cornerThree = document.getElementById(sevenId);
+
+  var nineId = userChar + 9;
+  var cornerNine = document.getElementById(nineId);
 }
+
 
 // remember to add to winning condition
 // method to see of all boxes are occupied
