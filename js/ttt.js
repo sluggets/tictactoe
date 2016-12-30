@@ -1,14 +1,9 @@
 document.addEventListener("DOMContentLoaded", function() {
-  humanPlayRecord =    [[], [], [], [],
-                   [], [], [], []];
-  cpuPlayRecord = [[], [], [], [],
-                   [], [], [], []];
-
-  threesBlocked = [];
-  console.log(humanPlayRecord);
-  userChoice = 3;
-  cpuChoice = 4;
-  mandatoryPlay = 0;
+  playRecord = [[], [], [],
+                [], [], [],
+                [], [], []];
+  userChoice = '';
+  cpuChoice = '';
   var elem = document.querySelector('.grid');
   
   var msnry = new Masonry(elem, {
@@ -21,27 +16,19 @@ document.addEventListener("DOMContentLoaded", function() {
   var ochoice = document.getElementById("o-button");
 
   // listens for user choosing 'X', sets global
-  // variable to reflect that, also sets cpuChoice
+  // variable to reflect that
   xchoice.addEventListener("click", function() {
     removePrompt();
-    userChoice = 2; 
-    cpuChoice = 1;
-    userChar = 'x';
-    cpuChar = 'o';
-    console.log("User chose: ");
-    console.log(userChoice); 
+    userChoice = 'x'; 
+    cpuChoice = 'o';
   });
 
   // listens for user choosing 'O', sets global
-  // variable to reflect that, also sets cpuChoice
+  // variable to reflect that
   ochoice.addEventListener("click", function() {
     removePrompt();
-    userChoice = 1;
-    cpuChoice = 2;
-    userChar = 'o';
-    cpuChar = 'x';
-    console.log("User chose: ");
-    console.log(userChoice); 
+    userChoice = 'o';
+    cpuChoice = 'x';
   });
  
 });
@@ -75,46 +62,23 @@ function restorePrompt()
 
 function displayMove(selection, usrChce)
 {
+  console.log("inside displayMove()");
   // may have to check if display is block already
   // by computer player
-  var  play = selection.target;
-  var loc;
-  if (play.children.length == 0)
+  var  userSelection = selection.target;
+  var locationNum = userSelection.children[0].id.slice(-1);
+  if (userSelection.children.length == 0)
   {
     return;
-  }
-  else if (usrChce == 1)
-  {
-    // may have to check if display is block already
-    // by computer player, although may not have to
-    /* if (play.children[1].style.display.length != 0)
-       {
-         continue to alter display css; 
-       }
-       else
-       {
-         return;
-       }*/
-    loc = play.children[1].id;
-    recordMove(loc, "human");
-    console.log("loc->id");
-    console.log(loc)
-    console.log("before display css->");
-    console.log(play.children[1].style.display.length); 
-    play.children[1].style.display = "block";
-    console.log("after display css->");
-    console.log(play.children[1].style.display); 
-    console.log(play.children[1].style.display.length); 
-  }
-  else if (usrChce == 2)
-  {
-    loc = play.children[0].id;
-    recordMove(loc, "human");
-    play.children[0].style.display = "block";
   }
   else
   {
-    return;
+    // may have to check if display is block already
+    // by computer player, although may not have to
+    recordMove(locationNum, "user");
+    var locationId = userChoice + locationNum;
+    var locationToDisplay = document.getElementById(locationId)
+    locationToDisplay.style.display = "block";
   }
 
   checkWinningCondition("human");
@@ -123,90 +87,16 @@ function displayMove(selection, usrChce)
 
 function recordMove(playLocation, whichPlayer)
 {
-  var loc = '';
-  var playType = '';
-  var playRecord;
-  if (playLocation.length == 2)
-  {
-    loc = playLocation.slice(1);  
-  }
-  else
-  {
-    loc = playLocation.toString();
-  }
-
-
-  if (whichPlayer == "human")
-  {
-    playType = userChoice;
-    playRecord = humanPlayRecord;
-  }
-  else
-  {
-    console.log("recording move for cpu!");
-    playType = cpuChoice;
-    playRecord = cpuPlayRecord;
-    console.log("INSIDE recordMove()->loc: " + loc);
-    console.log("PLAYTYPE: " + playType);
-    console.log("userChoice: " + userChoice);
-  }
-  console.log("inside recordMove()");
-  console.log(loc);
-  
-  switch (loc)
-  {
-    case "1":
-      playRecord[0].push(playType);    
-      playRecord[3].push(playType);
-      playRecord[7].push(playType);
-      break;
-    case "2":
-      playRecord[1].push(playType);    
-      playRecord[3].push(playType);
-      break;
-    case "3":
-      playRecord[3].push(playType);    
-      playRecord[2].push(playType);
-      playRecord[6].push(playType);
-      break;
-    case "4":
-      playRecord[0].push(playType);    
-      playRecord[4].push(playType);
-      break;
-    case "5":
-      playRecord[1].push(playType);    
-      playRecord[4].push(playType);    
-      playRecord[6].push(playType);
-      playRecord[7].push(playType);
-      break;
-    case "6":
-      playRecord[2].push(playType);    
-      playRecord[4].push(playType);
-      break;
-    case "7":
-      playRecord[0].push(playType);    
-      playRecord[5].push(playType);
-      playRecord[6].push(playType);
-      break;
-    case "8":
-      playRecord[1].push(playType);    
-      playRecord[5].push(playType);
-      break;
-    case "9":
-      playRecord[2].push(playType);    
-      playRecord[5].push(playType);
-      playRecord[7].push(playType);
-      break;
-  }
-  console.log("playRecord");
-  for (var item in playRecord)
-  {
-    console.log(playRecord[item]);
-    console.log("length");
-    console.log(playRecord[item].length);
-  }
+  playRecord[playLocation - 1] = whichPlayer == 'user' ? userChoice : cpuChoice;  
+  console.log("playRecord: ");
+  console.log(playRecord);
 }
 
+// checks to see if a location on the board is occupied
+function checkLocationStatus(playLocation)
+{
+  //TODO
+}
 function checkWinningCondition(whichPlayer)
 {
   // Need to implement loop with counter so 
@@ -500,3 +390,89 @@ function reactToCorner()
 // by Xs and Os
 
 // also cpuPlayRecord is not recording cpu plays
+
+/*function recordMove(playLocation, whichPlayer)
+{
+  var loc = '';
+  var playType = '';
+  var playRecord;
+  if (playLocation.length == 2)
+  {
+    loc = playLocation.slice(1);  
+  }
+  else
+  {
+    loc = playLocation.toString();
+  }
+
+
+  if (whichPlayer == "human")
+  {
+    playType = userChoice;
+    playRecord = humanPlayRecord;
+  }
+  else
+  {
+    console.log("recording move for cpu!");
+    playType = cpuChoice;
+    playRecord = cpuPlayRecord;
+    console.log("INSIDE recordMove()->loc: " + loc);
+    console.log("PLAYTYPE: " + playType);
+    console.log("userChoice: " + userChoice);
+  }
+  console.log("inside recordMove()");
+  console.log(loc);
+  
+  switch (loc)
+  {
+    case "1":
+      playRecord[0].push(playType);    
+      playRecord[3].push(playType);
+      playRecord[7].push(playType);
+      break;
+    case "2":
+      playRecord[1].push(playType);    
+      playRecord[3].push(playType);
+      break;
+    case "3":
+      playRecord[3].push(playType);    
+      playRecord[2].push(playType);
+      playRecord[6].push(playType);
+      break;
+    case "4":
+      playRecord[0].push(playType);    
+      playRecord[4].push(playType);
+      break;
+    case "5":
+      playRecord[1].push(playType);    
+      playRecord[4].push(playType);    
+      playRecord[6].push(playType);
+      playRecord[7].push(playType);
+      break;
+    case "6":
+      playRecord[2].push(playType);    
+      playRecord[4].push(playType);
+      break;
+    case "7":
+      playRecord[0].push(playType);    
+      playRecord[5].push(playType);
+      playRecord[6].push(playType);
+      break;
+    case "8":
+      playRecord[1].push(playType);    
+      playRecord[5].push(playType);
+      break;
+    case "9":
+      playRecord[2].push(playType);    
+      playRecord[5].push(playType);
+      playRecord[7].push(playType);
+      break;
+  }
+  console.log("playRecord");
+  for (var item in playRecord)
+  {
+    console.log(playRecord[item]);
+    console.log("length");
+    console.log(playRecord[item].length);
+  }
+}*/
