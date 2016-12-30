@@ -4,6 +4,9 @@ document.addEventListener("DOMContentLoaded", function() {
                 [], [], []];
   userChoice = '';
   cpuChoice = '';
+
+  mandatoryPlay = 0;
+  cornerPlay = 0;
   var elem = document.querySelector('.grid');
   
   var msnry = new Masonry(elem, {
@@ -92,6 +95,8 @@ function recordMove(playLocation, whichPlayer)
 }
 
 // checks to see if a location on the board is occupied
+// returns 0 if empty, 1 if occupied by user, 2 if 
+// occupied by cpu
 function checkLocationStatus(playLocation)
 {
   console.log("inside checkLocationStatus, playLocation->" + playLocation);
@@ -111,14 +116,9 @@ function checkLocationStatus(playLocation)
 
   return locationStatus;
 }
+
 function checkWinningCondition(whichPlayer)
 {
-  // Need to implement loop with counter so 
-  // that counter increments every time an 
-  // array contains 3 elements AND the sum
-  // of those elements is not a winning sum.
-  // if counter gets to 8 with NO winning sum,
-  // then a tie is declared
   var winningSequences = [[0, 3, 6], [1, 4, 7], [2, 5, 8],
                           [0, 1, 2], [3, 4, 6], [6, 7, 8],
                           [2, 4, 6], [0, 4, 8]];
@@ -135,14 +135,22 @@ function checkWinningCondition(whichPlayer)
       {
         ctr++;
       }
+
+      if (ctr == 2 &&
+          i == 2)
+      {
+        console.log("mandatoryPlay triggered!->" + winningSequences[sequence]);
+        mandatoryPlay = winningSequences[sequence];
+      }
     }
+
+   
 
     if (ctr == 3)
     {
       triggerEndGame(whichPlayer);
     }
   }
-  // insert mandatoryPlay for blocking threes!!
 }
 
 function checkForTie()
@@ -164,57 +172,33 @@ function checkForTie()
 
 function playComputerTurn(userLocNum)
 {
-  var center = document.getElementById(userChar + 5);
-
-  if (mandatoryPlay > 0)
+  console.log("Inside playComputerTurn()");
+  console.log("mandatoryPlay: " + mandatoryPlay);
+  if (mandatoryPlay)
   {
-    console.log("proceeding to block: " + mandatoryPlay);
-    switch (mandatoryPlay)
+    for (var loc in mandatoryPlay)
     {
-      case 1:
-        blockTheThree([1,4,7]); 
+      var tempLoc = mandatoryPlay[loc];
+      console.log("tempLoc: " + mandatoryPlay[loc]);
+      if (!checkLocationStatus(tempLoc))
+      {
+        var trueId = tempLoc + 1;
+        var mustPlay = document.getElementById(cpuChoice + trueId);
+        mustPlay.style.display = "block";
+        mandatoryPlay = 0;
+        recordMove(tempLoc, "cpu");
+        checkWinningCondition(cpuChoice);
         break;
-      case 2:
-        blockTheThree([2,5,8]); 
-        break;
-      case 3:
-        blockTheThree([3,6,9]); 
-        break;
-      case 4:
-        blockTheThree([1,2,3]); 
-        break;
-      case 5:
-        blockTheThree([4,5,6]); 
-        break;
-      case 6:
-        blockTheThree([7,8,9]); 
-        break;
-      case 7:
-        blockTheThree([3,5,7]); 
-        break;
-      case 8:
-        blockTheThree([1,5,9]); 
-        break;
-    } 
-    threesBlocked.push(mandatoryPlay);
-    mandatoryPlay = 0;    
-    console.log("threesBlocked: " + threesBlocked);
-  }
-  else if (center.style.display == "none")
+      }    
+    }
+  } 
+  else if (cornerPlay)
   {
-    var playCenter = document.getElementById(cpuChar + 5);
-    playCenter.style.display = "block";
-    recordMove(5, "cpu");
-    threesBlocked.push(7, 8, 2, 5);
-    return;
-  }
-  else if (center.style.display == "block")
-  {
-    findFirstEmpty();
+    reactToCorner();
   }
   else
   {
-    reactToCorner();
+    findFirstEmpty();
   }
 }
 
@@ -245,48 +229,9 @@ function resetGame()
   restorePrompt();
 }
 
-function blockTheThree(idArr)
-{
-  for (var id in idArr)
-  {
-    console.log("ID-> " + idArr[id]);
-    var divBox = document.getElementById(userChar + idArr[id]);
-    console.log("divBox style-> " + divBox.style.display);
-    if (divBox.style.display == "none")
-    {
-      console.log("cpuChar is: " + cpuChar + idArr[id]);
-      var playLoc = document.getElementById(cpuChar + idArr[id]);
-      console.log("display for CPU is: " + playLoc.style.display);
-      console.log("CPU" + cpuChar + idArr[id]);
-      if (playLoc.style.dislay !== "block")
-      {
-        playLoc.style.display = "block";
-        recordMove(idArr[id]);
-        return;
-      }
-    }
-  }  
-}
-
 function findFirstEmpty()
 {
-  for (var i = 1; i < 9; i++)
-  {
-    var boxId = userChar + i; 
-    console.log("boxId: " + boxId);
-    var boxLoc = document.getElementById(boxId);
-
-    var cpuId = cpuChar + i;
-    var cpuLoc = document.getElementById(cpuId);
-    if (boxLoc.style.display == "none" &&
-        cpuLoc.style.display == "none")
-    {
-      cpuLoc.style.display = "block";
-      recordMove(i, "cpu");
-      return;
-    }
-    
-  }
+  //TODO
 }
 
 function reactToCorner()
@@ -384,6 +329,29 @@ function reactToCorner()
     }
   }
 }
+/*function blockTheThree(idArr)
+{
+  for (var id in idArr)
+  {
+    console.log("ID-> " + idArr[id]);
+    var divBox = document.getElementById(userChar + idArr[id]);
+    console.log("divBox style-> " + divBox.style.display);
+    if (divBox.style.display == "none")
+    {
+      console.log("cpuChar is: " + cpuChar + idArr[id]);
+      var playLoc = document.getElementById(cpuChar + idArr[id]);
+      console.log("display for CPU is: " + playLoc.style.display);
+      console.log("CPU" + cpuChar + idArr[id]);
+      if (playLoc.style.dislay !== "block")
+      {
+        playLoc.style.display = "block";
+        recordMove(idArr[id]);
+        return;
+      }
+    }
+  }  
+}*/
+
 
 
 // remember to add to winning condition
