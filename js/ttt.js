@@ -62,9 +62,6 @@ function restorePrompt()
 
 function displayMove(selection, usrChce)
 {
-  console.log("inside displayMove()");
-  // may have to check if display is block already
-  // by computer player
   var  userSelection = selection.target;
   var locationNum = userSelection.children[0].id.slice(-1);
   if (userSelection.children.length == 0)
@@ -73,8 +70,6 @@ function displayMove(selection, usrChce)
   }
   else
   {
-    // may have to check if display is block already
-    // by computer player, although may not have to
     recordMove(locationNum, "user");
     var locationId = userChoice + locationNum;
     var locationToDisplay = document.getElementById(locationId)
@@ -99,7 +94,22 @@ function recordMove(playLocation, whichPlayer)
 // checks to see if a location on the board is occupied
 function checkLocationStatus(playLocation)
 {
-  //TODO
+  console.log("inside checkLocationStatus, playLocation->" + playLocation);
+  var userLoc = document.getElementById(userChoice + playLocation);
+  var cpuLoc = document.getElementById(cpuChoice + playLocation);
+
+  var locationStatus = 0;
+
+  if (userLoc.style.display == "block")
+  {
+    locationStatus = 1;
+  } 
+  else if (cpuLoc.style.display == "block")
+  {
+    locationStatus = 2;
+  }
+
+  return locationStatus;
 }
 function checkWinningCondition(whichPlayer)
 {
