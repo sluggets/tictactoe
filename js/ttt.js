@@ -81,15 +81,19 @@ function displayMove(selection, usrChce)
     locationToDisplay.style.display = "block";
   }
 
-  checkWinningCondition("human");
-  playComputerTurn(loc);
+  checkWinningCondition(userChoice);
+  checkForTie();
+  playComputerTurn(locationNum);
 }
 
 function recordMove(playLocation, whichPlayer)
 {
-  playRecord[playLocation - 1] = whichPlayer == 'user' ? userChoice : cpuChoice;  
-  console.log("playRecord: ");
-  console.log(playRecord);
+  playRecord[playLocation - 1][0] = whichPlayer == 'user' ? userChoice : cpuChoice;  
+
+  for (var item in playRecord)
+  {
+    console.log("playRecord: " + playRecord[item]);
+  }
 }
 
 // checks to see if a location on the board is occupied
@@ -105,63 +109,50 @@ function checkWinningCondition(whichPlayer)
   // of those elements is not a winning sum.
   // if counter gets to 8 with NO winning sum,
   // then a tie is declared
-  var playRecord;
-  if (whichPlayer == "human")
-  {
-    playRecord = humanPlayRecord;
-  }
-  else
-  {
-    playRecord = cpuPlayRecord;
-  }
+  var winningSequences = [[0, 3, 6], [1, 4, 7], [2, 5, 8],
+                          [0, 1, 2], [3, 4, 6], [6, 7, 8],
+                          [2, 4, 6], [0, 4, 8]];
 
-  var ctr = 0;
-  for (var item in playRecord)
+  for (var sequence in winningSequences)
   {
-    var winningSum = 0;
-    if (playRecord[item].length == 2)
+    console.log("sequence");
+    console.log(winningSequences[sequence]); 
+    var ctr = 0;
+    for (var i = 0; i < 3; i++)
     {
-      winningSum = playRecord[item][0] + playRecord[item][1];
-      if ((userChoice == 2 &&
-           winningSum == 4) ||
-          (userChoice == 1 &&
-           winningSum == 2))
+      var tempTest = winningSequences[sequence][i];
+      if (playRecord[tempTest][0] == whichPlayer) 
       {
-        var indexNum = playRecord.indexOf(playRecord[item]) + 1;
-        if (threesBlocked.indexOf(indexNum) == -1)
-        {
-          mandatoryPlay = indexNum;
-          console.log("TRIGGERED!!" + indexNum);
-        }
-        //threesBlocked.push(4);
-        //console.log("threesBlocked: " + threesBlocked);
+        ctr++;
       }
     }
 
-    if (playRecord[item].length == 3)
+    if (ctr == 3)
+    {
+      triggerEndGame(whichPlayer);
+    }
+  }
+  // insert mandatoryPlay for blocking threes!!
+}
+
+function checkForTie()
+{
+  var ctr = 0;
+  for (var item in playRecord)
+  {
+    if (playRecord[item].length == 1)
     {
       ctr++;
-      winningSum = playRecord[item][0] + playRecord[item][1] + playRecord[item][2];
-      console.log("sum of three is...");
-      console.log(winningSum);
-      if (winningSum == 3 ||
-          winningSum == 6)
-      {
-        // for the win!
-        var winner = winningSum == 3 ? 'o-wins' : 'x-wins';
-        triggerEndGame(winner);
-      }
     }
   }
 
   if (ctr == 8)
   {
-    // for the tie
     triggerEndGame('tie');
   }
 }
 
-function playComputerTurn(humanLocId)
+function playComputerTurn(userLocNum)
 {
   var center = document.getElementById(userChar + 5);
 
