@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function() {
   cpuChoice = '';
 
   mandatoryPlay = 0;
-  cornerPlay = 0;
+  corner = 0;
   var elem = document.querySelector('.grid');
   
   var msnry = new Masonry(elem, {
@@ -36,6 +36,7 @@ document.addEventListener("DOMContentLoaded", function() {
  
 });
 
+// maybe build fillSquare() function?
 function removePrompt()
 {
   var prompt = document.getElementById('choose1');
@@ -73,6 +74,14 @@ function displayMove(selection, usrChce)
   }
   else
   {
+    if (locationNum == 1 ||
+        locationNum == 3 ||
+        locationNum == 7 ||
+        locationNum == 9)
+    {
+      corner = locationNum;
+    }
+
     recordMove(locationNum, "user");
     var locationId = userChoice + locationNum;
     var locationToDisplay = document.getElementById(locationId)
@@ -90,7 +99,7 @@ function recordMove(playLocation, whichPlayer)
 
   for (var item in playRecord)
   {
-    console.log("playRecord: " + playRecord[item]);
+    console.log("playRecord: " +  + item + playRecord[item]);
   }
 }
 
@@ -119,6 +128,7 @@ function checkLocationStatus(playLocation)
 
 function checkWinningCondition(whichPlayer)
 {
+  console.log("whichPlayer" + whichPlayer);
   var winningSequences = [[0, 3, 6], [1, 4, 7], [2, 5, 8],
                           [0, 1, 2], [3, 4, 6], [6, 7, 8],
                           [2, 4, 6], [0, 4, 8]];
@@ -128,6 +138,10 @@ function checkWinningCondition(whichPlayer)
     console.log("sequence");
     console.log(winningSequences[sequence]); 
     var ctr = 0;
+    // must fix this loop to not throw mandatoryPlay flag
+    // if ONLY two opposing plays are in a row...
+    // condition MUST be if two opposing plays are in a row
+    // AND the third box is EMPTY AF!!!
     for (var i = 0; i < 3; i++)
     {
       var tempTest = winningSequences[sequence][i];
@@ -180,21 +194,30 @@ function playComputerTurn(userLocNum)
     {
       var tempLoc = mandatoryPlay[loc];
       console.log("tempLoc: " + mandatoryPlay[loc]);
-      if (!checkLocationStatus(tempLoc))
+      if (!checkLocationStatus(tempLoc + 1))
       {
         var trueId = tempLoc + 1;
         var mustPlay = document.getElementById(cpuChoice + trueId);
         mustPlay.style.display = "block";
         mandatoryPlay = 0;
-        recordMove(tempLoc, "cpu");
+        recordMove(tempLoc + 1, "cpu");
         checkWinningCondition(cpuChoice);
         break;
       }    
     }
   } 
-  else if (cornerPlay)
+  else if (checkLocationStatus(5) == 0)
   {
-    reactToCorner();
+    var cpuFiveId = cpuChoice + 5; 
+    var fiveCenter = document.getElementById(cpuFiveId);
+    fiveCenter.style.display = "block";
+    recordMove(5, "cpu");
+    checkWinningCondition(cpuChoice);
+  }
+  else if (corner)
+  {
+    cornerPlay(corner);
+    corner = 0;
   }
   else
   {
@@ -222,8 +245,7 @@ function resetGame()
   
   for (var i = 0; i < 8; i++)
   {
-    humanPlayRecord[i] = [];
-    cpuPlayRecord[i] = [];
+    playRecord[i] = [];
   } 
 
   restorePrompt();
@@ -231,103 +253,113 @@ function resetGame()
 
 function findFirstEmpty()
 {
-  //TODO
+  for (var i = 1; i < 10; i++)
+  {
+    if (checkLocationStatus(i) == 0)
+    {
+      var cpuId = cpuChoice + i;
+      var firstPlay = document.getElementById(cpuId);  
+      firstPlay.style.display = "block";
+      recordMove(i, "cpu");
+      checkWinningCondition(cpuChoice);
+      break;
+    } 
+  }
 }
 
-function reactToCorner()
+function cornerPlay(locNum)
 {
-  console.log("INSIDE reactToCorner()");
-  var cpuTwoId = cpuChar + 2;
-  var twoAdjacent = document.getElementById(cpuTwoId);
- 
-  var cpuFourId = cpuChar + 4;
-  var fourAdjacent = document.getElementById(cpuFourId);
-
-  var cpuSixId = cpuChar + 6;
-  var sixAdjacent = document.getElementById(cpuSixId);
-
-  var cpuEightId = cpuChar + 8;
-  var eightAdjacent = document.getElementById(cpuEightId);
-
-  var oneId = userChar + 1;
-  var cornerOne = document.getElementById(oneId);
+  console.log("INSIDE cornerPlay()");
   
-  if (cornerOne.style.display == "block")
+
+  // this if/else business
+  // simply REACTS to corner plays, it doesn't
+  // MAKE corner plays if corners are empty?!!
+  if (checkLocationStatus(1) == 1 &&
+           (checkLocationStatus(2) == 0 ||
+            checkLocationStatus(4) == 0))
   {
-    console.log("INSIDE corner one");
-    if (twoAdjacent.style.display == "none")
+    if (checkLocationStatus(2) == 0)
     {
-      twoAdjacent.style.display = "block";
+      var cpuTwoId = cpuChoice + 2;
+      var twoPlay = document.getElementById(cpuTwoId); 
+      twoPlay.style.display = "block";
       recordMove(2, "cpu");
-      return;
+      checkWinningCondition(cpuChoice);
     }
-    else if (fourAdjacent.style.display == "none")
+    else
     {
-      fourAdjacent.style.display = "block";
+      var cpuFourId = cpuChoice + 4;
+      var fourPlay = document.getElementById(cpuFourId);
+      fourPlay.style.display = "block";
       recordMove(4, "cpu");
-      return;
+      checkWinningCondition(cpuChoice);
     }
   }
-
-  var threeId = userChar + 3;
-  var cornerThree = document.getElementById(threeId);
-
-  if (cornerThree.style.display == "block")
+  else if (checkLocationStatus(3) == 1 &&
+           (checkLocationStatus(2) == 0 ||
+            checkLocationStatus(6) == 0))
   {
-    console.log("INSIDE corner three");
-    if (twoAdjacent.style.display == "none")
+    if (checkLocationStatus(2) == 0)
     {
-      twoAdjacent.style.display = "block";
+      var cpuTwoId = cpuChoice + 2;
+      var twoPlay = document.getElementById(cpuTwoId);
+      twoPlay.style.display = "block";
       recordMove(2, "cpu");
-      return;
+      checkWinningCondition(cpuChoice);
     }
-    else if (sixAdjacent.style.display == "none")
+    else
     {
-      sixAdjacent.style.display = "block";
+      var cpuSixId = cpuChoice + 6;
+      var sixPlay = document.getElementById(cpuSixId);
+      sixPlay.style.display = "block";
       recordMove(6, "cpu");
-      return;
+      checkWinningCondition(cpuChoice);
     }
   }
-
-  var sevenId = userChar + 7;
-  var cornerSeven = document.getElementById(sevenId);
-
-  if (cornerSeven.style.display == "block")
+  else if (checkLocationStatus(7) == 1 &&
+           (checkLocationStatus(4) == 0 ||
+            checkLocationStatus(8) == 0))
   {
-    console.log("INSIDE corner seven");
-    if (fourAdjacent.style.display == "none")
+    if (checkLocationStatus(4) == 0)
     {
-      fourAdjacent.style.display = "block";
+      var cpuFourId = cpuChoice + 4;
+      var fourPlay = document.getElementById(cpuFourId);
+      fourPlay.style.display = "block";
       recordMove(4, "cpu");
-      return;
-    }
-    else if (eightAdjacent.style.display == "none")
+      checkWinningCondition(cpuChoice);
+    } 
+    else
     {
-      eightAdjacent.style.display = "block";
+      var cpuEightId = cpuChoice + 8;
+      var eightPlay = document.getElementById(cpuEightId);
+      eightPlay.style.display = "block";
       recordMove(8, "cpu");
-      return;
+      checkWinningCondition(cpuChoice);
     }
   }
-
-  var nineId = userChar + 9;
-  var cornerNine = document.getElementById(nineId);
-
-  if (cornerNine.style.display == "block")
+  else if (checkLocationStatus(9) == 1 &&
+           (checkLocationStatus(6) == 0 ||
+            checkLocationStatus(8) == 0))
   {
-    console.log("INSIDE corner nine");
-    if (sixAdjacent.style.display == "none")
+    if (checkLocationStatus(6) == 0)
     {
-      sixAdjacent.style.display = "block";
+      var cpuSixId = cpuChoice + 6;
+      var sixPlay = document.getElementById(cpuSixId);
+      sixPlay.style.display = "block";
       recordMove(6, "cpu");
-      return;
+      checkWinningCondition(cpuChoice);
     }
-    else if (eightAdjacent.style.display == "none")
+    else
     {
-      eightAdjacent.style.display = "block";
+      var cpuEightId = cpuChoice + 8;
+      var eightPlay = document.getElementById(cpuEightId);
+      eightPlay.style.display = "block";
       recordMove(8, "cpu");
-      return;
+      checkWinningCondition(cpuChoice);
     }
   }
+  
 }
 /*function blockTheThree(idArr)
 {
