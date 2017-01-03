@@ -2,6 +2,10 @@ document.addEventListener("DOMContentLoaded", function() {
   playRecord = [[], [], [],
                 [], [], [],
                 [], [], []];
+
+  winningSequences = [[0, 3, 6], [1, 4, 7], [2, 5, 8],
+                          [0, 1, 2], [3, 4, 6], [6, 7, 8],
+                          [2, 4, 6], [0, 4, 8]];
   userChoice = '';
   cpuChoice = '';
 
@@ -66,6 +70,7 @@ function restorePrompt()
 
 function displayMove(selection, usrChce)
 {
+  mandatoryPlay = 0;
   var  userSelection = selection.target;
   var locationNum = userSelection.children[0].id.slice(-1);
   if (userSelection.children.length == 0)
@@ -86,9 +91,11 @@ function displayMove(selection, usrChce)
     var locationId = userChoice + locationNum;
     var locationToDisplay = document.getElementById(locationId)
     locationToDisplay.style.display = "block";
+    console.log("user played this->" + locationNum);
+    console.log("location status SHOULD be 1!->" + checkLocationStatus(locationNum));
   }
 
-  checkWinningCondition(userChoice);
+  checkWinningCondition();
   checkForTie();
   playComputerTurn(locationNum);
 }
@@ -126,18 +133,15 @@ function checkLocationStatus(playLocation)
   return locationStatus;
 }
 
-function checkWinningCondition(whichPlayer)
+function checkWinningCondition()
 {
-  console.log("whichPlayer" + whichPlayer);
-  var winningSequences = [[0, 3, 6], [1, 4, 7], [2, 5, 8],
-                          [0, 1, 2], [3, 4, 6], [6, 7, 8],
-                          [2, 4, 6], [0, 4, 8]];
 
   for (var sequence in winningSequences)
   {
     console.log("sequence");
     console.log(winningSequences[sequence]); 
-    var ctr = 0;
+    var cpuCtr = 0;
+    var userCtr = 0;
     // must fix this loop to not throw mandatoryPlay flag
     // if ONLY two opposing plays are in a row...
     // condition MUST be if two opposing plays are in a row
@@ -145,24 +149,45 @@ function checkWinningCondition(whichPlayer)
     for (var i = 0; i < 3; i++)
     {
       var tempTest = winningSequences[sequence][i];
-      if (playRecord[tempTest][0] == whichPlayer) 
+      if (playRecord[tempTest][0] == userChoice) 
       {
-        ctr++;
+        userCtr++;
+      }
+      else if (playRecord[tempTest][0] == cpuChoice)
+      {
+        cpuCtr++;
       }
 
-      if (ctr == 2 &&
+      if ((userCtr == 2 || cpuCtr == 2) &&
           i == 2)
       {
-        console.log("mandatoryPlay triggered!->" + winningSequences[sequence]);
-        mandatoryPlay = winningSequences[sequence];
+        var toCheckOne = winningSequences[sequence][0] + 1;
+        var toCheckTwo = winningSequences[sequence][1] + 1;
+        var toCheckThree = winningSequences[sequence][2] + 1;
+        console.log("check location first: " + checkLocationStatus(toCheckOne));
+        console.log("check location second: " + checkLocationStatus(toCheckTwo)); 
+        console.log("check location third: " + checkLocationStatus(toCheckThree));
+        
+        if (checkLocationStatus(toCheckOne) != 0 ||
+            checkLocationStatus(toCheckTwo) != 0 ||
+            checkLocationStatus(toCheckThree) != 0)
+        {
+          console.log("mandatoryPlay triggered!->" + winningSequences[sequence]);
+          console.log("sequence is: " + sequence);
+          mandatoryPlay = winningSequences[sequence];
+
+        }
+        winningSequences.splice(sequence, 1); 
       }
     }
 
-   
-
-    if (ctr == 3)
+    if (userCtr == 3)
     {
-      triggerEndGame(whichPlayer);
+      triggerEndGame(userChoice);
+    }
+    else if (cpuCtr == 3)
+    {
+      triggerEndGame(cpuChoice);
     }
   }
 }
@@ -170,17 +195,21 @@ function checkWinningCondition(whichPlayer)
 function checkForTie()
 {
   var ctr = 0;
-  for (var item in playRecord)
+  for (var i = 1; i < 10; i++)
   {
-    if (playRecord[item].length == 1)
+    if (checkLocationStatus(i) != 0)
     {
       ctr++;
     }
   }
 
-  if (ctr == 8)
+  if (ctr == 9)
   {
     triggerEndGame('tie');
+  }
+  else
+  {
+    return;
   }
 }
 
@@ -193,17 +222,17 @@ function playComputerTurn(userLocNum)
     for (var loc in mandatoryPlay)
     {
       var tempLoc = mandatoryPlay[loc];
+      var cssId = tempLoc + 1;
       console.log("tempLoc: " + mandatoryPlay[loc]);
-      if (!checkLocationStatus(tempLoc + 1))
+      if (!checkLocationStatus(cssId))
       {
-        var trueId = tempLoc + 1;
-        var mustPlay = document.getElementById(cpuChoice + trueId);
+        var mustPlay = document.getElementById(cpuChoice + cssId);
         mustPlay.style.display = "block";
         mandatoryPlay = 0;
-        recordMove(tempLoc + 1, "cpu");
-        checkWinningCondition(cpuChoice);
+        recordMove(cssId, "cpu");
+        checkWinningCondition();
         break;
-      }    
+      }
     }
   } 
   else if (checkLocationStatus(5) == 0)
@@ -212,7 +241,7 @@ function playComputerTurn(userLocNum)
     var fiveCenter = document.getElementById(cpuFiveId);
     fiveCenter.style.display = "block";
     recordMove(5, "cpu");
-    checkWinningCondition(cpuChoice);
+    checkWinningCondition();
   }
   else if (corner)
   {
@@ -261,7 +290,7 @@ function findFirstEmpty()
       var firstPlay = document.getElementById(cpuId);  
       firstPlay.style.display = "block";
       recordMove(i, "cpu");
-      checkWinningCondition(cpuChoice);
+      checkWinningCondition();
       break;
     } 
   }
@@ -285,7 +314,7 @@ function cornerPlay(locNum)
       var twoPlay = document.getElementById(cpuTwoId); 
       twoPlay.style.display = "block";
       recordMove(2, "cpu");
-      checkWinningCondition(cpuChoice);
+      checkWinningCondition();
     }
     else
     {
@@ -293,7 +322,7 @@ function cornerPlay(locNum)
       var fourPlay = document.getElementById(cpuFourId);
       fourPlay.style.display = "block";
       recordMove(4, "cpu");
-      checkWinningCondition(cpuChoice);
+      checkWinningCondition();
     }
   }
   else if (checkLocationStatus(3) == 1 &&
@@ -306,7 +335,7 @@ function cornerPlay(locNum)
       var twoPlay = document.getElementById(cpuTwoId);
       twoPlay.style.display = "block";
       recordMove(2, "cpu");
-      checkWinningCondition(cpuChoice);
+      checkWinningCondition();
     }
     else
     {
@@ -314,7 +343,7 @@ function cornerPlay(locNum)
       var sixPlay = document.getElementById(cpuSixId);
       sixPlay.style.display = "block";
       recordMove(6, "cpu");
-      checkWinningCondition(cpuChoice);
+      checkWinningCondition();
     }
   }
   else if (checkLocationStatus(7) == 1 &&
@@ -327,7 +356,7 @@ function cornerPlay(locNum)
       var fourPlay = document.getElementById(cpuFourId);
       fourPlay.style.display = "block";
       recordMove(4, "cpu");
-      checkWinningCondition(cpuChoice);
+      checkWinningCondition();
     } 
     else
     {
@@ -335,7 +364,7 @@ function cornerPlay(locNum)
       var eightPlay = document.getElementById(cpuEightId);
       eightPlay.style.display = "block";
       recordMove(8, "cpu");
-      checkWinningCondition(cpuChoice);
+      checkWinningCondition();
     }
   }
   else if (checkLocationStatus(9) == 1 &&
@@ -348,7 +377,7 @@ function cornerPlay(locNum)
       var sixPlay = document.getElementById(cpuSixId);
       sixPlay.style.display = "block";
       recordMove(6, "cpu");
-      checkWinningCondition(cpuChoice);
+      checkWinningCondition();
     }
     else
     {
@@ -356,7 +385,7 @@ function cornerPlay(locNum)
       var eightPlay = document.getElementById(cpuEightId);
       eightPlay.style.display = "block";
       recordMove(8, "cpu");
-      checkWinningCondition(cpuChoice);
+      checkWinningCondition();
     }
   }
   
