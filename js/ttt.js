@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 [], [], []];
 
   winningSequences = [[0, 3, 6], [1, 4, 7], [2, 5, 8],
-                          [0, 1, 2], [3, 4, 6], [6, 7, 8],
+                          [0, 1, 2], [3, 4, 5], [6, 7, 8],
                           [2, 4, 6], [0, 4, 8]];
   userChoice = '';
   cpuChoice = '';
@@ -70,7 +70,7 @@ function restorePrompt()
 
 function displayMove(selection, usrChce)
 {
-  mandatoryPlay = 0;
+  //mandatoryPlay = 0;
   var  userSelection = selection.target;
   var locationNum = userSelection.children[0].id.slice(-1);
   if (userSelection.children.length == 0)
@@ -158,7 +158,7 @@ function checkWinningCondition()
         cpuCtr++;
       }
 
-      if ((userCtr == 2 || cpuCtr == 2) &&
+      /*if ((userCtr == 2 || cpuCtr == 2) &&
           i == 2)
       {
         var toCheckOne = winningSequences[sequence][0] + 1;
@@ -178,7 +178,7 @@ function checkWinningCondition()
 
         }
         winningSequences.splice(sequence, 1); 
-      }
+      }*/
     }
 
     if (userCtr == 3)
@@ -216,6 +216,7 @@ function checkForTie()
 function playComputerTurn(userLocNum)
 {
   console.log("Inside playComputerTurn()");
+  checkForMandatoryPlay(); 
   console.log("mandatoryPlay: " + mandatoryPlay);
   if (mandatoryPlay)
   {
@@ -388,121 +389,139 @@ function cornerPlay(locNum)
       checkWinningCondition();
     }
   }
-  
 }
-/*function blockTheThree(idArr)
+
+// okay, obviously what we need to do here
+// is check for XX mandatory play FIRST
+// play the third X man!!
+// If no two XX, then play OO man!!!
+function checkForMandatoryPlay()
 {
-  for (var id in idArr)
+  for (var sequence in winningSequences)
   {
-    console.log("ID-> " + idArr[id]);
-    var divBox = document.getElementById(userChar + idArr[id]);
-    console.log("divBox style-> " + divBox.style.display);
-    if (divBox.style.display == "none")
+    /*console.log("sequence");
+    console.log(winningSequences[sequence]);*/
+    var cpuCtr = 0;
+    //var userCtr = 0;
+    // must fix this loop to not throw mandatoryPlay flag
+    // if ONLY two opposing plays are in a row...
+    // condition MUST be if two opposing plays are in a row
+    // AND the third box is EMPTY AF!!!
+    for (var i = 0; i < 3; i++)
     {
-      console.log("cpuChar is: " + cpuChar + idArr[id]);
-      var playLoc = document.getElementById(cpuChar + idArr[id]);
-      console.log("display for CPU is: " + playLoc.style.display);
-      console.log("CPU" + cpuChar + idArr[id]);
-      if (playLoc.style.dislay !== "block")
+      console.log("inside check for cpu threes");
+      console.log("sequence");
+      console.log(winningSequences[sequence]); 
+      console.log(winningSequences[sequence][i]); 
+      var cpuTest = winningSequences[sequence][i];
+      if (playRecord[cpuTest][0] == cpuChoice)
       {
-        playLoc.style.display = "block";
-        recordMove(idArr[id]);
-        return;
+        cpuCtr++;
+        console.log("incrementing counter to->" + cpuCtr);
+        /*if (cpuCtr == 2 && i == 2)
+        {
+          console.log("checking :" + winningSequences[sequence]);
+          checkSequence(winningSequences[sequence]);
+          winningSequences.splice(sequence, 1); 
+          return;
+        }*/
+      }
+      if (cpuCtr == 2 && i == 2)
+      {
+        console.log("checking :" + winningSequences[sequence]);
+        checkSequence(winningSequences[sequence], sequence);
+        console.log("MANDATORY in IF: " + mandatoryPlay);
+        console.log("SEQUENCE: " + sequence);
+        //winningSequences.splice(sequence, 1); 
+        if (mandatoryPlay)
+        {
+          return;
+        }
       }
     }
-  }  
-}*/
+    /*for (var i = 0; i < 3; i++)
+    {
+      console.log("inside check for user threes");
+      console.log("sequence");
+      console.log(winningSequences[sequence]); 
+      var userTest = winningSequences[sequence][i];
+      if (playRecord[userTest][0] == userChoice) 
+      {
+        userCtr++;
+        if (userCtr == 2 && i == 2)
+        {
+          checkSequence(winningSequences[sequence]);
+          winningSequences.splice(sequence, 1); 
+          return;
+        }
+      }
 
+    }*/
+  }
+  for (var sequence in winningSequences)
+  {
+    var userCtr = 0;
+    for (var i = 0; i < 3; i++)
+    {
+      console.log("inside check for user threes");
+      console.log("sequence");
+      console.log(winningSequences[sequence]); 
+      console.log(winningSequences[sequence][i]); 
+      var userTest = winningSequences[sequence][i];
+      if (playRecord[userTest][0] == userChoice) 
+      {
+        userCtr++;
+        console.log("incrementing counter to->" + userCtr);
+        /*console.log("i equals->" + i);
+        if (userCtr == 2 && i == 2)
+        {
+          console.log("about to go into checkSequence()!");
+          checkSequence(winningSequences[sequence]);
+          winningSequences.splice(sequence, 1); 
+          return;
+        }*/
+      }
+      if (userCtr == 2 && i == 2)
+      {
+        console.log("about to go into checkSequence()!");
+        checkSequence(winningSequences[sequence], sequence);
+        console.log("MANDATORY in IF: " + mandatoryPlay);
+        console.log("SEQUENCE: " + sequence);
+        //winningSequences.splice(sequence, 1); 
+        //return;
+      }
+    }
+  }
+}
 
-
-// remember to add to winning condition
-// method to see of all boxes are occupied
-// by Xs and Os
-
-// also cpuPlayRecord is not recording cpu plays
-
-/*function recordMove(playLocation, whichPlayer)
+function checkSequence(seq, index)
 {
-  var loc = '';
-  var playType = '';
-  var playRecord;
-  if (playLocation.length == 2)
+  var toCheckOne = seq[0] + 1;
+  var toCheckTwo = seq[1] + 1;
+  var toCheckThree = seq[2] + 1;
+  console.log("check location first: " + checkLocationStatus(toCheckOne));
+  console.log("check location second: " + checkLocationStatus(toCheckTwo)); 
+  console.log("check location third: " + checkLocationStatus(toCheckThree));
+        
+  console.log("seq: " + seq);
+ 
+  if (checkLocationStatus(toCheckOne) == 0 ||
+      checkLocationStatus(toCheckTwo) == 0 ||
+      checkLocationStatus(toCheckThree) == 0)
   {
-    loc = playLocation.slice(1);  
-  }
-  else
-  {
-    loc = playLocation.toString();
+    console.log("mandatoryPlay triggered!->" + seq);
+    //console.log("sequence is: " + sequence);
+    mandatoryPlay = seq;
+    console.log("deleting: " + seq);
+    winningSequences.splice(index, 1); 
   }
 
+  if (checkLocationStatus(toCheckOne) != 0 &&
+      checkLocationStatus(toCheckTwo) != 0 &&
+      checkLocationStatus(toCheckThree) != 0)
+  {
+    console.log("deleting: " + seq + " inside second if");
+    winningSequences.splice(index, 1); 
+  } 
 
-  if (whichPlayer == "human")
-  {
-    playType = userChoice;
-    playRecord = humanPlayRecord;
-  }
-  else
-  {
-    console.log("recording move for cpu!");
-    playType = cpuChoice;
-    playRecord = cpuPlayRecord;
-    console.log("INSIDE recordMove()->loc: " + loc);
-    console.log("PLAYTYPE: " + playType);
-    console.log("userChoice: " + userChoice);
-  }
-  console.log("inside recordMove()");
-  console.log(loc);
-  
-  switch (loc)
-  {
-    case "1":
-      playRecord[0].push(playType);    
-      playRecord[3].push(playType);
-      playRecord[7].push(playType);
-      break;
-    case "2":
-      playRecord[1].push(playType);    
-      playRecord[3].push(playType);
-      break;
-    case "3":
-      playRecord[3].push(playType);    
-      playRecord[2].push(playType);
-      playRecord[6].push(playType);
-      break;
-    case "4":
-      playRecord[0].push(playType);    
-      playRecord[4].push(playType);
-      break;
-    case "5":
-      playRecord[1].push(playType);    
-      playRecord[4].push(playType);    
-      playRecord[6].push(playType);
-      playRecord[7].push(playType);
-      break;
-    case "6":
-      playRecord[2].push(playType);    
-      playRecord[4].push(playType);
-      break;
-    case "7":
-      playRecord[0].push(playType);    
-      playRecord[5].push(playType);
-      playRecord[6].push(playType);
-      break;
-    case "8":
-      playRecord[1].push(playType);    
-      playRecord[5].push(playType);
-      break;
-    case "9":
-      playRecord[2].push(playType);    
-      playRecord[5].push(playType);
-      playRecord[7].push(playType);
-      break;
-  }
-  console.log("playRecord");
-  for (var item in playRecord)
-  {
-    console.log(playRecord[item]);
-    console.log("length");
-    console.log(playRecord[item].length);
-  }
-}*/
+}
