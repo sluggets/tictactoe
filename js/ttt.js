@@ -135,11 +135,12 @@ function checkLocationStatus(playLocation)
 
 function checkWinningCondition()
 {
+  var winning = [[0, 3, 6], [1, 4, 7], [2, 5, 8],
+                 [0, 1, 2], [3, 4, 5], [6, 7, 8],
+                 [2, 4, 6], [0, 4, 8]];
 
-  for (var sequence in winningSequences)
+  for (var sequence in winning)
   {
-    console.log("sequence");
-    console.log(winningSequences[sequence]); 
     var cpuCtr = 0;
     var userCtr = 0;
     // must fix this loop to not throw mandatoryPlay flag
@@ -148,7 +149,7 @@ function checkWinningCondition()
     // AND the third box is EMPTY AF!!!
     for (var i = 0; i < 3; i++)
     {
-      var tempTest = winningSequences[sequence][i];
+      var tempTest = winning[sequence][i];
       if (playRecord[tempTest][0] == userChoice) 
       {
         userCtr++;
@@ -157,28 +158,6 @@ function checkWinningCondition()
       {
         cpuCtr++;
       }
-
-      /*if ((userCtr == 2 || cpuCtr == 2) &&
-          i == 2)
-      {
-        var toCheckOne = winningSequences[sequence][0] + 1;
-        var toCheckTwo = winningSequences[sequence][1] + 1;
-        var toCheckThree = winningSequences[sequence][2] + 1;
-        console.log("check location first: " + checkLocationStatus(toCheckOne));
-        console.log("check location second: " + checkLocationStatus(toCheckTwo)); 
-        console.log("check location third: " + checkLocationStatus(toCheckThree));
-        
-        if (checkLocationStatus(toCheckOne) != 0 ||
-            checkLocationStatus(toCheckTwo) != 0 ||
-            checkLocationStatus(toCheckThree) != 0)
-        {
-          console.log("mandatoryPlay triggered!->" + winningSequences[sequence]);
-          console.log("sequence is: " + sequence);
-          mandatoryPlay = winningSequences[sequence];
-
-        }
-        winningSequences.splice(sequence, 1); 
-      }*/
     }
 
     if (userCtr == 3)
@@ -300,12 +279,28 @@ function findFirstEmpty()
 function cornerPlay(locNum)
 {
   console.log("INSIDE cornerPlay()");
-  
+  var cornerArray = [1, 3, 7, 9]; 
 
+  var toPlay = 0;
+  for (var i = 0; i < 4; i++)
+  {
+    if (checkLocationStatus(cornerArray[i]) == 0)
+    {
+      toPlay = cornerArray[i];
+    }
+  }
   // this if/else business
   // simply REACTS to corner plays, it doesn't
   // MAKE corner plays if corners are empty?!!
-  if (checkLocationStatus(1) == 1 &&
+  if (toPlay)
+  {
+    var crnrId = cpuChoice + toPlay;
+    var crnrPlay = document.getElementById(crnrId); 
+    crnrPlay.style.display = "block";
+    recordMove(toPlay, "cpu");
+    checkWinningCondition();
+  } 
+  else if (checkLocationStatus(1) == 1 &&
            (checkLocationStatus(2) == 0 ||
             checkLocationStatus(4) == 0))
   {
