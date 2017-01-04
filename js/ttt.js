@@ -106,7 +106,7 @@ function recordMove(playLocation, whichPlayer)
 
   for (var item in playRecord)
   {
-    console.log("playRecord: " +  + item + playRecord[item]);
+    console.log("playRecord: "  + item + playRecord[item]);
   }
 }
 
@@ -252,11 +252,15 @@ function resetGame()
     boxes[i].style.display = "none";
   }*/ 
   
-  for (var i = 0; i < 8; i++)
+  for (var i = 0; i < 9; i++)
   {
     playRecord[i] = [];
   } 
 
+  winningSequences = [[0, 3, 6], [1, 4, 7], [2, 5, 8],
+                          [0, 1, 2], [3, 4, 5], [6, 7, 8],
+                          [2, 4, 6], [0, 4, 8]];
+  
   restorePrompt();
 }
 
