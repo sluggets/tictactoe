@@ -284,13 +284,65 @@ function cornerPlay(locNum)
 {
   console.log("INSIDE cornerPlay()");
   var cornerArray = [1, 3, 7, 9]; 
+  var sideArray = [2, 4, 6, 8];
+
+  var oneStatus = checkLocationStatus(1);
+  var threeStatus = checkLocationStatus(3);
+  var sevenStatus = checkLocationStatus(7);
+  var nineStatus = checkLocationStatus(9);
+
 
   var toPlay = 0;
   for (var i = 0; i < 4; i++)
   {
     if (checkLocationStatus(cornerArray[i]) == 0)
     {
-      toPlay = cornerArray[i];
+        toPlay = cornerArray[i];
+    }
+  }
+
+  if (checkLocationStatus(2) == 1)
+  {
+    if (oneStatus == 0)
+    {
+      toPlay = 1;
+    }
+    else if (threeStatus == 0)
+    {
+      toPlay = 3;
+    }
+  }
+  else if (checkLocationStatus(6) == 1)
+  {
+    if (threeStatus == 0)
+    {
+      toPlay = 3;
+    }
+    else if (nineStatus == 0)
+    {
+      toPlay = 9;
+    }
+  }
+  else if (checkLocationStatus(8) == 1)
+  {
+    if (nineStatus == 0)
+    {
+      toPlay = 9;
+    }
+    else if (sevenStatus == 0)
+    {
+      toPlay = 7;
+    }
+  }
+  else if (checkLocationStatus(4) == 1)
+  {
+    if (sevenStatus == 0)
+    {
+      toPlay = 7;
+    }
+    else if (oneStatus == 0)
+    {
+      toPlay = 1;
     }
   }
   // this if/else business
