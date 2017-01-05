@@ -1,24 +1,46 @@
 document.addEventListener("DOMContentLoaded", function() {
+  // all numbering of tic tac toe grid is done ascending beginning
+  // in upper left corner and continuing clockwise.
+  // arrays are zero indexed of course, but the ids in the 
+  // html are NOT, so id grid starts at one! 
+
+  // this is a record of plays made during the game
   playRecord = [[], [], [],
                 [], [], [],
                 [], [], []];
 
+  // global array holds all the winning sequences that can be
+  // made/guarded against
+  // note that there is a local version of this in 
+  // checkWinningCondition() used for its own purposes
+  // THIS is for purposes in checkForMandatoryPlay()
+  // and checkSequence() 
   winningSequences = [[0, 3, 6], [1, 4, 7], [2, 5, 8],
                           [0, 1, 2], [3, 4, 5], [6, 7, 8],
                           [2, 4, 6], [0, 4, 8]];
+
+  // global variables to store who is X, who is Y
   userChoice = '';
   cpuChoice = '';
 
+  // global flag to indicate if cpu MUST make a play
+  // in order to win or avoid loss
   mandatoryPlay = 0;
+
+  // global flag to trigger a corner play
   corner = 0;
+
+  // selects grid class for masonry grid layout library
   var elem = document.querySelector('.grid');
   
+  // sets up masonry grid
   var msnry = new Masonry(elem, {
     itemSelector: '.grid-item',
     columnWidth: 80,
     gutter: 1.5
   });
 
+  // grabs button ids for selecting player letter
   var xchoice = document.getElementById("x-button");
   var ochoice = document.getElementById("o-button");
 
@@ -40,7 +62,6 @@ document.addEventListener("DOMContentLoaded", function() {
  
 });
 
-// maybe build fillSquare() function?
 function removePrompt()
 {
   var prompt = document.getElementById('choose1');
@@ -70,7 +91,8 @@ function restorePrompt()
 
 function displayMove(selection, usrChce)
 {
-  //mandatoryPlay = 0;
+  // fix this shit below!
+  console.log("selection.target->" + selection.target.children);
   var  userSelection = selection.target;
   var locationNum = userSelection.children[0].id.slice(-1);
   if (userSelection.children.length == 0)
