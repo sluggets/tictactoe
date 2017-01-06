@@ -62,11 +62,14 @@ document.addEventListener("DOMContentLoaded", function() {
  
 });
 
+// removes player selection prompt
+// and clears previous game 
 function removePrompt()
 {
   var prompt = document.getElementById('choose1');
   prompt.style.display = 'none';  
 
+  // gets rid of winning/losing/tie message
   var winningElems = document.getElementsByClassName("winner");
   
   for (var i = 0; i < 3; i++)
@@ -74,6 +77,7 @@ function removePrompt()
     winningElems[i].style.display = "none";
   }
 
+  // sets display of all tic tac toe boxes to blank again
   var boxes = document.getElementsByClassName("boxes");
   var size = boxes.length;
  
@@ -83,17 +87,19 @@ function removePrompt()
   } 
 }
 
+// gets the prompt back to start new game
 function restorePrompt()
 {
   var prompt = document.getElementById('choose1');
   prompt.style.display = 'block';
 }
 
+// displays and records the user's move
 function displayMove(selection, usrChce)
 {
   // fix this shit below!
-  console.log("selection.target->" + selection.target.children);
   var  userSelection = selection.target;
+  console.log("selection.target->" + userSelection.children);
   var locationNum = userSelection.children[0].id.slice(-1);
   if (userSelection.children.length == 0)
   {
@@ -288,6 +294,7 @@ function resetGame()
 
 function findFirstEmpty()
 {
+  console.log("Inside findFirstEmpty()");
   for (var i = 1; i < 10; i++)
   {
     if (checkLocationStatus(i) == 0)
@@ -305,6 +312,7 @@ function findFirstEmpty()
 function cornerPlay(locNum)
 {
   console.log("INSIDE cornerPlay()");
+  console.log("corner: " + corner);
   var cornerArray = [1, 3, 7, 9]; 
   var sideArray = [2, 4, 6, 8];
 
