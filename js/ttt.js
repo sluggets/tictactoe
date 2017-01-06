@@ -29,6 +29,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
   // global flag to trigger a corner play
   corner = 0;
+  insideReaction = 0;
 
   // selects grid class for masonry grid layout library
   var elem = document.querySelector('.grid');
@@ -99,10 +100,12 @@ function displayMove(selection, usrChce)
 {
   // fix this shit below!
   var  userSelection = selection.currentTarget;
-  console.log("selection.target->" + userSelection.children[0].id);
+  // muting the log below
+  //console.log("selection.target->" + userSelection.children[0].id);
   var locationNum = userSelection.children[0].id.slice(-1);
   var divId = userSelection.children[0].id.slice(0,1);
-  console.log("divId: " + divId);
+  // mutin the log below
+  //console.log("divId: " + divId);
   if (checkLocationStatus(locationNum) != 0)
   {
     return;
@@ -121,8 +124,9 @@ function displayMove(selection, usrChce)
     var locationId = userChoice + locationNum;
     var locationToDisplay = document.getElementById(locationId)
     locationToDisplay.style.display = "block";
-    console.log("user played this->" + locationNum);
-    console.log("location status SHOULD be 1!->" + checkLocationStatus(locationNum));
+    // muting the below logs
+    //console.log("user played this->" + locationNum);
+    //console.log("location status SHOULD be 1!->" + checkLocationStatus(locationNum));
   }
 
   checkWinningCondition();
@@ -134,10 +138,11 @@ function recordMove(playLocation, whichPlayer)
 {
   playRecord[playLocation - 1][0] = whichPlayer == 'user' ? userChoice : cpuChoice;  
 
-  for (var item in playRecord)
+  // muting the below log
+  /*for (var item in playRecord)
   {
     console.log("playRecord: "  + item + playRecord[item]);
-  }
+  }*/
 }
 
 // checks to see if a location on the board is occupied
@@ -145,7 +150,8 @@ function recordMove(playLocation, whichPlayer)
 // occupied by cpu
 function checkLocationStatus(playLocation)
 {
-  console.log("inside checkLocationStatus, playLocation->" + playLocation);
+  // muting the below test
+  //console.log("inside checkLocationStatus, playLocation->" + playLocation);
   var userLoc = document.getElementById(userChoice + playLocation);
   var cpuLoc = document.getElementById(cpuChoice + playLocation);
 
@@ -233,7 +239,7 @@ function playComputerTurn(userLocNum)
     {
       var tempLoc = mandatoryPlay[loc];
       var cssId = tempLoc + 1;
-      console.log("tempLoc: " + mandatoryPlay[loc]);
+      // muting this->console.log("tempLoc: " + mandatoryPlay[loc]);
       if (!checkLocationStatus(cssId))
       {
         var mustPlay = document.getElementById(cpuChoice + cssId);
@@ -266,7 +272,7 @@ function playComputerTurn(userLocNum)
 
 function triggerEndGame(str)
 {
-  console.log("RESULT IS:   " + str);
+  // muting this log->console.log("RESULT IS:   " + str);
   var winningElem = document.getElementById(str); 
   winningElem.style.display = "block";
   resetGame();
@@ -392,6 +398,8 @@ function cornerPlay(locNum)
            (checkLocationStatus(2) == 0 ||
             checkLocationStatus(4) == 0))
   {
+    console.log("inside reaction corner plays");
+    insideReaction = 1;
     if (checkLocationStatus(2) == 0)
     {
       var cpuTwoId = cpuChoice + 2;
@@ -492,15 +500,16 @@ function checkForMandatoryPlay()
     // AND the third box is EMPTY AF!!!
     for (var i = 0; i < 3; i++)
     {
-      console.log("inside check for cpu threes");
+      // muting the below logs
+      /*console.log("inside check for cpu threes");
       console.log("sequence");
       console.log(winningSequences[sequence]); 
-      console.log(winningSequences[sequence][i]); 
+      console.log(winningSequences[sequence][i]);*/ 
       var cpuTest = winningSequences[sequence][i];
       if (playRecord[cpuTest][0] == cpuChoice)
       {
         cpuCtr++;
-        console.log("incrementing counter to->" + cpuCtr);
+        // muting this->console.log("incrementing counter to->" + cpuCtr);
         /*if (cpuCtr == 2 && i == 2)
         {
           console.log("checking :" + winningSequences[sequence]);
@@ -511,10 +520,11 @@ function checkForMandatoryPlay()
       }
       if (cpuCtr == 2 && i == 2)
       {
-        console.log("checking :" + winningSequences[sequence]);
+        // muting->console.log("checking :" + winningSequences[sequence]);
         checkSequence(winningSequences[sequence], sequence);
-        console.log("MANDATORY in IF: " + mandatoryPlay);
-        console.log("SEQUENCE: " + sequence);
+        // muting below logs
+        /*console.log("MANDATORY in IF: " + mandatoryPlay);
+        console.log("SEQUENCE: " + sequence);*/
         //winningSequences.splice(sequence, 1); 
         if (mandatoryPlay)
         {
@@ -546,15 +556,16 @@ function checkForMandatoryPlay()
     var userCtr = 0;
     for (var i = 0; i < 3; i++)
     {
-      console.log("inside check for user threes");
+      // muting below logs
+      /*console.log("inside check for user threes");
       console.log("sequence");
       console.log(winningSequences[sequence]); 
-      console.log(winningSequences[sequence][i]); 
+      console.log(winningSequences[sequence][i]);*/ 
       var userTest = winningSequences[sequence][i];
       if (playRecord[userTest][0] == userChoice) 
       {
         userCtr++;
-        console.log("incrementing counter to->" + userCtr);
+        // muting->console.log("incrementing counter to->" + userCtr);
         /*console.log("i equals->" + i);
         if (userCtr == 2 && i == 2)
         {
@@ -566,10 +577,11 @@ function checkForMandatoryPlay()
       }
       if (userCtr == 2 && i == 2)
       {
-        console.log("about to go into checkSequence()!");
+        // muting->console.log("about to go into checkSequence()!");
         checkSequence(winningSequences[sequence], sequence);
-        console.log("MANDATORY in IF: " + mandatoryPlay);
-        console.log("SEQUENCE: " + sequence);
+        // muting below logs
+        /*console.log("MANDATORY in IF: " + mandatoryPlay);
+        console.log("SEQUENCE: " + sequence);*/
         //winningSequences.splice(sequence, 1); 
         //return;
       }
@@ -582,11 +594,12 @@ function checkSequence(seq, index)
   var toCheckOne = seq[0] + 1;
   var toCheckTwo = seq[1] + 1;
   var toCheckThree = seq[2] + 1;
-  console.log("check location first: " + checkLocationStatus(toCheckOne));
+  // muting below logs
+  /*console.log("check location first: " + checkLocationStatus(toCheckOne));
   console.log("check location second: " + checkLocationStatus(toCheckTwo)); 
-  console.log("check location third: " + checkLocationStatus(toCheckThree));
+  console.log("check location third: " + checkLocationStatus(toCheckThree));*/
         
-  console.log("seq: " + seq);
+  // muting->console.log("seq: " + seq);
  
   if (checkLocationStatus(toCheckOne) == 0 ||
       checkLocationStatus(toCheckTwo) == 0 ||
