@@ -103,7 +103,7 @@ function displayMove(selection, usrChce)
   var locationNum = userSelection.children[0].id.slice(-1);
   var divId = userSelection.children[0].id.slice(0,1);
   console.log("divId: " + divId);
-  if (checkLocationStatus(locationNum) == 1)
+  if (checkLocationStatus(locationNum) != 0)
   {
     return;
   }
