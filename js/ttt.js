@@ -98,10 +98,12 @@ function restorePrompt()
 function displayMove(selection, usrChce)
 {
   // fix this shit below!
-  var  userSelection = selection.target;
-  console.log("selection.target->" + userSelection.children);
+  var  userSelection = selection.currentTarget;
+  console.log("selection.target->" + userSelection.children[0].id);
   var locationNum = userSelection.children[0].id.slice(-1);
-  if (userSelection.children.length == 0)
+  var divId = userSelection.children[0].id.slice(0,1);
+  console.log("divId: " + divId);
+  if (checkLocationStatus(locationNum) == 1)
   {
     return;
   }
