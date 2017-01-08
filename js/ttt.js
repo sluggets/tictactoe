@@ -86,6 +86,12 @@ function removePrompt()
   {
     boxes[i].style.display = "none";
   } 
+
+  for (var i = 0; i < 9; i++)
+  {
+    playRecord[i] = [];
+  } 
+
 }
 
 // gets the prompt back to start new game
@@ -98,10 +104,8 @@ function restorePrompt()
 // displays and records the user's move
 function displayMove(selection, usrChce)
 {
-  // fix this shit below!
+  // puts selection user clicked on into variable
   var  userSelection = selection.currentTarget;
-  // muting the log below
-  //console.log("selection.target->" + userSelection.children[0].id);
   var locationNum = userSelection.children[0].id.slice(-1);
   var divId = userSelection.children[0].id.slice(0,1);
   // mutin the log below
@@ -110,7 +114,7 @@ function displayMove(selection, usrChce)
   {
     return;
   }
-  else
+  /*else
   {
     if (locationNum == 1 ||
         locationNum == 3 ||
@@ -127,8 +131,12 @@ function displayMove(selection, usrChce)
     // muting the below logs
     //console.log("user played this->" + locationNum);
     //console.log("location status SHOULD be 1!->" + checkLocationStatus(locationNum));
-  }
+  }*/
 
+  recordMove(locationNum, "user");
+  var locationId = userChoice + locationNum;
+  var locationToDisplay = document.getElementById(locationId)
+  locationToDisplay.style.display = "block";
   checkWinningCondition();
   checkForTie();
   playComputerTurn(locationNum);
@@ -250,22 +258,43 @@ function playComputerTurn(userLocNum)
         break;
       }
     }
+    return;
   } 
-  else if (checkLocationStatus(5) == 0)
+ 
+  var ctr = 0;
+  var openingCornerPlay = false;
+  for (var item in playRecord)
+  {
+    if (playRecord[item].length != 0)
+    {
+      ctr++;
+    }
+  }
+
+  if (ctr == 1 &&
+      (checkLocationStatus(1) == 1 ||
+       checkLocationStatus(3) == 1 ||
+       checkLocationStatus(7) == 1 ||
+       checkLocationStatus(9) == 1))
+  {
+    openingCorner();  
+    return;
+  }
+
+    
+  if (checkLocationStatus(5) == 0)
   {
     var cpuFiveId = cpuChoice + 5; 
     var fiveCenter = document.getElementById(cpuFiveId);
     fiveCenter.style.display = "block";
     recordMove(5, "cpu");
     checkWinningCondition();
+    return;
   }
-  else if (corner)
-  {
-    cornerPlay(corner);
-    corner = 0;
-  }
-  else
-  {
+  var cornerPlayMade = cornerPlay();
+ 
+  if (!cornerPlayMade)
+  { 
     findFirstEmpty();
   }
 }
@@ -291,7 +320,7 @@ function resetGame()
   for (var i = 0; i < 9; i++)
   {
     playRecord[i] = [];
-  } 
+  }
 
   winningSequences = [[0, 3, 6], [1, 4, 7], [2, 5, 8],
                           [0, 1, 2], [3, 4, 5], [6, 7, 8],
@@ -317,8 +346,9 @@ function findFirstEmpty()
   }
 }
 
-function cornerPlay(locNum)
+function cornerPlay()
 {
+  var cornerPlayMade = false;
   console.log("INSIDE cornerPlay()");
   console.log("corner: " + corner);
   var cornerArray = [1, 3, 7, 9]; 
@@ -393,6 +423,7 @@ function cornerPlay(locNum)
     crnrPlay.style.display = "block";
     recordMove(toPlay, "cpu");
     checkWinningCondition();
+    cornerPlayMade = true;
   } 
   else if (checkLocationStatus(1) == 1 &&
            (checkLocationStatus(2) == 0 ||
@@ -407,6 +438,7 @@ function cornerPlay(locNum)
       twoPlay.style.display = "block";
       recordMove(2, "cpu");
       checkWinningCondition();
+      cornerPlayMade = true;
     }
     else
     {
@@ -415,6 +447,7 @@ function cornerPlay(locNum)
       fourPlay.style.display = "block";
       recordMove(4, "cpu");
       checkWinningCondition();
+      cornerPlayMade = true;
     }
   }
   else if (checkLocationStatus(3) == 1 &&
@@ -428,6 +461,7 @@ function cornerPlay(locNum)
       twoPlay.style.display = "block";
       recordMove(2, "cpu");
       checkWinningCondition();
+      cornerPlayMade = true;
     }
     else
     {
@@ -436,6 +470,7 @@ function cornerPlay(locNum)
       sixPlay.style.display = "block";
       recordMove(6, "cpu");
       checkWinningCondition();
+      cornerPlayMade = true;
     }
   }
   else if (checkLocationStatus(7) == 1 &&
@@ -449,6 +484,7 @@ function cornerPlay(locNum)
       fourPlay.style.display = "block";
       recordMove(4, "cpu");
       checkWinningCondition();
+      cornerPlayMade = true;
     } 
     else
     {
@@ -457,6 +493,7 @@ function cornerPlay(locNum)
       eightPlay.style.display = "block";
       recordMove(8, "cpu");
       checkWinningCondition();
+      cornerPlayMade = true;
     }
   }
   else if (checkLocationStatus(9) == 1 &&
@@ -470,6 +507,7 @@ function cornerPlay(locNum)
       sixPlay.style.display = "block";
       recordMove(6, "cpu");
       checkWinningCondition();
+      cornerPlayMade = true;
     }
     else
     {
@@ -478,8 +516,11 @@ function cornerPlay(locNum)
       eightPlay.style.display = "block";
       recordMove(8, "cpu");
       checkWinningCondition();
+      cornerPlayMade = true;
     }
   }
+
+  return cornerPlayMade;
 }
 
 // okay, obviously what we need to do here
@@ -619,5 +660,25 @@ function checkSequence(seq, index)
     console.log("deleting: " + seq + " inside second if");
     winningSequences.splice(index, 1); 
   } 
+
+}
+
+// if the user opens with a corner,
+// cpu will play opposite corner
+function openingCorner()
+{
+  cornerRange = {'1': 9, '3': 7, '9': 1, '7': 3};
+
+  for (var key in cornerRange)
+  {
+    if (checkLocationStatus(key) == 1)
+    {
+      var cpuId = cpuChoice + cornerRange[key];
+      var oppositeCorner = document.getElementById(cpuId);
+      oppositeCorner.style.display = "block";
+      recordMove(cornerRange[key], "cpu");
+      checkWinningCondition();
+    }
+  }
 
 }
