@@ -107,30 +107,12 @@ function displayMove(selection, usrChce)
   var  userSelection = selection.currentTarget;
   var locationNum = userSelection.children[0].id.slice(-1);
   var divId = userSelection.children[0].id.slice(0,1);
-  // mutin the log below
-  //console.log("divId: " + divId);
+
+  // if the user clicks on already played square
   if (checkLocationStatus(locationNum) != 0)
   {
     return;
   }
-  /*else
-  {
-    if (locationNum == 1 ||
-        locationNum == 3 ||
-        locationNum == 7 ||
-        locationNum == 9)
-    {
-      corner = locationNum;
-    }
-
-    recordMove(locationNum, "user");
-    var locationId = userChoice + locationNum;
-    var locationToDisplay = document.getElementById(locationId)
-    locationToDisplay.style.display = "block";
-    // muting the below logs
-    //console.log("user played this->" + locationNum);
-    //console.log("location status SHOULD be 1!->" + checkLocationStatus(locationNum));
-  }*/
 
   recordMove(locationNum, "user");
   var locationId = userChoice + locationNum;
@@ -141,15 +123,12 @@ function displayMove(selection, usrChce)
   playComputerTurn(locationNum);
 }
 
+// records move that was played to global playRecord
 function recordMove(playLocation, whichPlayer)
 {
+  // conditional statement to assign proper play to playRecord
   playRecord[playLocation - 1][0] = whichPlayer == 'user' ? userChoice : cpuChoice;  
 
-  // muting the below log
-  /*for (var item in playRecord)
-  {
-    console.log("playRecord: "  + item + playRecord[item]);
-  }*/
 }
 
 // checks to see if a location on the board is occupied
@@ -157,13 +136,13 @@ function recordMove(playLocation, whichPlayer)
 // occupied by cpu
 function checkLocationStatus(playLocation)
 {
-  // muting the below test
-  //console.log("inside checkLocationStatus, playLocation->" + playLocation);
+  // collects status on specific location for both user and cpu
   var userLoc = document.getElementById(userChoice + playLocation);
   var cpuLoc = document.getElementById(cpuChoice + playLocation);
 
   var locationStatus = 0;
 
+  // checks if the css display rule is block or none
   if (userLoc.style.display == "block")
   {
     locationStatus = 1;
@@ -176,20 +155,24 @@ function checkLocationStatus(playLocation)
   return locationStatus;
 }
 
+// checks to see if someone has won!
 function checkWinningCondition()
 {
+  // checks against a local version of the global
+  // variable winningSequences, since the global
+  // version gets altered as winning sequences
+  // get eliminated through play
   var winning = [[0, 3, 6], [1, 4, 7], [2, 5, 8],
                  [0, 1, 2], [3, 4, 5], [6, 7, 8],
                  [2, 4, 6], [0, 4, 8]];
 
+  // loop counts up if either player has all three of
+  // any specific winning sequence in the arrays
   for (var sequence in winning)
   {
     var cpuCtr = 0;
     var userCtr = 0;
-    // must fix this loop to not throw mandatoryPlay flag
-    // if ONLY two opposing plays are in a row...
-    // condition MUST be if two opposing plays are in a row
-    // AND the third box is EMPTY AF!!!
+
     for (var i = 0; i < 3; i++)
     {
       var tempTest = winning[sequence][i];
@@ -203,6 +186,8 @@ function checkWinningCondition()
       }
     }
 
+    // if one or the other player has those three 
+    // then triggerEndGame is called
     if (userCtr == 3)
     {
       triggerEndGame(userChoice);
@@ -214,9 +199,15 @@ function checkWinningCondition()
   }
 }
 
+// checks to see if a tie is the result
+// note that this is only called after the
+// user plays, because they would play last
+// in a tie situation
 function checkForTie()
 {
   var ctr = 0;
+
+  // count up squares whose status is not undecided
   for (var i = 1; i < 10; i++)
   {
     if (checkLocationStatus(i) != 0)
@@ -225,6 +216,8 @@ function checkForTie()
     }
   }
 
+  // if all squares have been played and the checkWinningCondition()
+  // has not been called, it MUST be a tie
   if (ctr == 9)
   {
     triggerEndGame('tie');
@@ -235,18 +228,22 @@ function checkForTie()
   }
 }
 
+// handles the algorithm the cpu will use
+// to respond to specific correct plays,
+// or specific incorrect plays by the user
 function playComputerTurn(userLocNum)
 {
-  console.log("Inside playComputerTurn()");
+  // checks to see if any two-in-rows are there
+  // that the cpu needs to block
   checkForMandatoryPlay(); 
-  console.log("mandatoryPlay: " + mandatoryPlay);
+
+  // if there are, then block them
   if (mandatoryPlay)
   {
     for (var loc in mandatoryPlay)
     {
       var tempLoc = mandatoryPlay[loc];
       var cssId = tempLoc + 1;
-      // muting this->console.log("tempLoc: " + mandatoryPlay[loc]);
       if (!checkLocationStatus(cssId))
       {
         var mustPlay = document.getElementById(cpuChoice + cssId);
@@ -260,8 +257,9 @@ function playComputerTurn(userLocNum)
     return;
   } 
  
+  // counts to see if this is the user's
+  // FIRST play
   var ctr = 0;
-  var openingCornerPlay = false;
   for (var item in playRecord)
   {
     if (playRecord[item].length != 0)
@@ -270,6 +268,10 @@ function playComputerTurn(userLocNum)
     }
   }
 
+  // if it IS the user's first play, it will
+  // check to see if the first play is a corner
+  // then call openingCorner() to play the opposite
+  // corner
   if (ctr == 1 &&
       (checkLocationStatus(1) == 1 ||
        checkLocationStatus(3) == 1 ||
@@ -281,6 +283,8 @@ function playComputerTurn(userLocNum)
   }
 
     
+  // if middle square hasn't been played, this will
+  // play it
   if (checkLocationStatus(5) == 0)
   {
     var cpuFiveId = cpuChoice + 5; 
@@ -290,32 +294,33 @@ function playComputerTurn(userLocNum)
     checkWinningCondition();
     return;
   }
+  
+  // variable stores boolean of whether cornerPlay 
+  // was made or not
   var cornerPlayMade = cornerPlay();
  
+  // if cornerPlay() did not make a play 
+  // according to its algorithm, we will
+  // play the first empty spot encountered
   if (!cornerPlayMade)
   { 
     findFirstEmpty();
   }
 }
 
+// triggers winner header to appear and calls 
+// resetGame()
 function triggerEndGame(str)
 {
-  // muting this log->console.log("RESULT IS:   " + str);
   var winningElem = document.getElementById(str); 
   winningElem.style.display = "block";
   resetGame();
 }
 
+// resets game by clearing the playRecord global and
+// restoring the global winningSequendes array
 function resetGame()
 {
-  /*var boxes = document.getElementsByClassName("boxes");
-  var size = boxes.length;
- 
-  for (var i = 0; i < size; i++)
-  {
-    boxes[i].style.display = "none";
-  }*/ 
-  
   for (var i = 0; i < 9; i++)
   {
     playRecord[i] = [];
@@ -325,9 +330,11 @@ function resetGame()
                           [0, 1, 2], [3, 4, 5], [6, 7, 8],
                           [2, 4, 6], [0, 4, 8]];
   
+  // puts player selection prompt back up to start new game
   restorePrompt();
 }
 
+// finds the first empty square and plays there
 function findFirstEmpty()
 {
   console.log("Inside findFirstEmpty()");
@@ -345,21 +352,42 @@ function findFirstEmpty()
   }
 }
 
+// does two things, of which I'm unsure the value of
+// just yet. 1) It will play an available corner that is
+// adjacent to a sideplay made by the user...
+// and 2) It will REACT to a corner play made by the
+// user with playing a side play
 function cornerPlay()
 {
+  // variable that gets returned to 
+  // trigger the next computer play of
+  // first empty square or not triggered
   var cornerPlayMade = false;
+
   console.log("INSIDE cornerPlay()");
-  console.log("corner: " + corner);
+
+  // arrays to loop through of corner slots
+  // and side slots
   var cornerArray = [1, 3, 7, 9]; 
   var sideArray = [2, 4, 6, 8];
 
+  // stores status of corner squares in some variables
+  // for easier comparison later
   var oneStatus = checkLocationStatus(1);
   var threeStatus = checkLocationStatus(3);
   var sevenStatus = checkLocationStatus(7);
   var nineStatus = checkLocationStatus(9);
 
-
+  // variable to store what corner to play in.
+  // if toPlay does not get reassigned an
+  // available corner to play, it stays at 
+  // zero and triggers the next stage of 
+  // corner plays
   var toPlay = 0;
+
+  
+  // initially sets toPlay to store the location of the 
+  // first available empty corner square
   for (var i = 0; i < 4; i++)
   {
     if (checkLocationStatus(cornerArray[i]) == 0)
@@ -368,6 +396,9 @@ function cornerPlay()
     }
   }
 
+  // this series of if/else statements changes toPlay
+  // based off of whether or not there are user side plays
+  // to play corners off of
   if (checkLocationStatus(2) == 1)
   {
     if (oneStatus == 0)
@@ -412,11 +443,17 @@ function cornerPlay()
       toPlay = 1;
     }
   }
-  // this if/else business
-  // simply REACTS to corner plays, it doesn't
-  // MAKE corner plays if corners are empty?!!
+
+  // if toPlay was successfully assigned something 
+  // other than zero in the previous code, then that
+  // toPlay corner will be made here
+  // otherwise, the function launches into the business
+  // of REACTING with sideplays to the user's corner plays.
+  // especially NOT sure of value of this last block of
+  // handling
   if (toPlay)
   {
+    console.log("Used toPlay to make a move!!");
     var crnrId = cpuChoice + toPlay;
     var crnrPlay = document.getElementById(crnrId); 
     crnrPlay.style.display = "block";
@@ -453,6 +490,7 @@ function cornerPlay()
            (checkLocationStatus(2) == 0 ||
             checkLocationStatus(6) == 0))
   {
+    console.log("inside reaction corner plays");
     if (checkLocationStatus(2) == 0)
     {
       var cpuTwoId = cpuChoice + 2;
@@ -476,6 +514,7 @@ function cornerPlay()
            (checkLocationStatus(4) == 0 ||
             checkLocationStatus(8) == 0))
   {
+    console.log("inside reaction corner plays");
     if (checkLocationStatus(4) == 0)
     {
       var cpuFourId = cpuChoice + 4;
@@ -499,6 +538,7 @@ function cornerPlay()
            (checkLocationStatus(6) == 0 ||
             checkLocationStatus(8) == 0))
   {
+    console.log("inside reaction corner plays");
     if (checkLocationStatus(6) == 0)
     {
       var cpuSixId = cpuChoice + 6;
@@ -519,139 +559,116 @@ function cornerPlay()
     }
   }
 
+  // returns whether or not we made a move inside
+  // this function
   return cornerPlayMade;
 }
 
-// okay, obviously what we need to do here
-// is check for XX mandatory play FIRST
-// play the third X man!!
-// If no two XX, then play OO man!!!
+// this checks to see if there are any plays
+// that must be made in order to either
+// block the user from winning OR clinch the
+// win of the cpu
 function checkForMandatoryPlay()
 {
+  // this loop checks for plays needed to clinch the
+  // win for the cpu
   for (var sequence in winningSequences)
   {
-    /*console.log("sequence");
-    console.log(winningSequences[sequence]);*/
+    // of the three squares needed to win tic tac toe, 
+    // holds count of how many of those squares of the
+    // eight possible winning combinations have been
+    // made by the cpu
     var cpuCtr = 0;
-    //var userCtr = 0;
-    // must fix this loop to not throw mandatoryPlay flag
-    // if ONLY two opposing plays are in a row...
-    // condition MUST be if two opposing plays are in a row
-    // AND the third box is EMPTY AF!!!
+
+    // loops through and tests each element of
+    // each winningSequences array
     for (var i = 0; i < 3; i++)
     {
-      // muting the below logs
-      /*console.log("inside check for cpu threes");
-      console.log("sequence");
-      console.log(winningSequences[sequence]); 
-      console.log(winningSequences[sequence][i]);*/ 
       var cpuTest = winningSequences[sequence][i];
       if (playRecord[cpuTest][0] == cpuChoice)
       {
         cpuCtr++;
-        // muting this->console.log("incrementing counter to->" + cpuCtr);
-        /*if (cpuCtr == 2 && i == 2)
-        {
-          console.log("checking :" + winningSequences[sequence]);
-          checkSequence(winningSequences[sequence]);
-          winningSequences.splice(sequence, 1); 
-          return;
-        }*/
       }
+
+      // if out of three winning moves, at least two in 
+      // the three have been won, calls checkSequence to
+      // see if the third is available to play, and if
+      // so triggers mandatoryPlay flag to true
       if (cpuCtr == 2 && i == 2)
       {
-        // muting->console.log("checking :" + winningSequences[sequence]);
         checkSequence(winningSequences[sequence], sequence);
-        // muting below logs
-        /*console.log("MANDATORY in IF: " + mandatoryPlay);
-        console.log("SEQUENCE: " + sequence);*/
-        //winningSequences.splice(sequence, 1); 
+
         if (mandatoryPlay)
         {
           return;
         }
       }
     }
-    /*for (var i = 0; i < 3; i++)
-    {
-      console.log("inside check for user threes");
-      console.log("sequence");
-      console.log(winningSequences[sequence]); 
-      var userTest = winningSequences[sequence][i];
-      if (playRecord[userTest][0] == userChoice) 
-      {
-        userCtr++;
-        if (userCtr == 2 && i == 2)
-        {
-          checkSequence(winningSequences[sequence]);
-          winningSequences.splice(sequence, 1); 
-          return;
-        }
-      }
-
-    }*/
   }
+  
+  // this loop checks for plays needed to BLOCK a 
+  // win by the user
   for (var sequence in winningSequences)
   {
+    // holds count of user squares, to see if 
+    // at least two out of a winning sequence
+    // are occupied
     var userCtr = 0;
+
+    // loops through and tests each element of
+    // each winningSequences array
     for (var i = 0; i < 3; i++)
     {
-      // muting below logs
-      /*console.log("inside check for user threes");
-      console.log("sequence");
-      console.log(winningSequences[sequence]); 
-      console.log(winningSequences[sequence][i]);*/ 
       var userTest = winningSequences[sequence][i];
       if (playRecord[userTest][0] == userChoice) 
       {
         userCtr++;
-        // muting->console.log("incrementing counter to->" + userCtr);
-        /*console.log("i equals->" + i);
-        if (userCtr == 2 && i == 2)
-        {
-          console.log("about to go into checkSequence()!");
-          checkSequence(winningSequences[sequence]);
-          winningSequences.splice(sequence, 1); 
-          return;
-        }*/
       }
+
+      // if out of three winning moves, at least two in 
+      // the three have been won, calls checkSequence to
+      // see if the third is available to play, and if
+      // so triggers mandatoryPlay flag to true
       if (userCtr == 2 && i == 2)
       {
-        // muting->console.log("about to go into checkSequence()!");
         checkSequence(winningSequences[sequence], sequence);
-        // muting below logs
-        /*console.log("MANDATORY in IF: " + mandatoryPlay);
-        console.log("SEQUENCE: " + sequence);*/
-        //winningSequences.splice(sequence, 1); 
-        //return;
       }
     }
   }
 }
 
+// checks to see if any sequence of two can
+// be blocked to prevent user win, or made
+// to seal cpu win.
+// also eliminates potential winning sequences
+// from winningSequences global array that have
+// been nullified
 function checkSequence(seq, index)
 {
+  // variables to hold the square to check,
+  // adds one to have accurate element id
+  // instead of zero-based index of array
   var toCheckOne = seq[0] + 1;
   var toCheckTwo = seq[1] + 1;
   var toCheckThree = seq[2] + 1;
-  // muting below logs
-  /*console.log("check location first: " + checkLocationStatus(toCheckOne));
-  console.log("check location second: " + checkLocationStatus(toCheckTwo)); 
-  console.log("check location third: " + checkLocationStatus(toCheckThree));*/
-        
-  // muting->console.log("seq: " + seq);
  
+  // if two of any winning sequences are met,
+  // AND the third is available to play, the
+  // mandatoryPlay global flag is triggered
+  // and set to that threatening sequence
   if (checkLocationStatus(toCheckOne) == 0 ||
       checkLocationStatus(toCheckTwo) == 0 ||
       checkLocationStatus(toCheckThree) == 0)
   {
     console.log("mandatoryPlay triggered!->" + seq);
-    //console.log("sequence is: " + sequence);
     mandatoryPlay = seq;
     console.log("deleting: " + seq);
     winningSequences.splice(index, 1); 
   }
 
+  // if the threatening sequence has already 
+  // been blocked, just removes it from the global
+  // winningSequences array
   if (checkLocationStatus(toCheckOne) != 0 &&
       checkLocationStatus(toCheckTwo) != 0 &&
       checkLocationStatus(toCheckThree) != 0)
@@ -666,6 +683,7 @@ function checkSequence(seq, index)
 // cpu will play opposite corner
 function openingCorner()
 {
+  // key-value pairs of played-counterplay actions
   cornerRange = {'1': 9, '3': 7, '9': 1, '7': 3};
 
   for (var key in cornerRange)
@@ -679,5 +697,4 @@ function openingCorner()
       checkWinningCondition();
     }
   }
-
 }
