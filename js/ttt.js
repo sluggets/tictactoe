@@ -28,7 +28,6 @@ document.addEventListener("DOMContentLoaded", function() {
   mandatoryPlay = 0;
 
   // global flag to trigger a corner play
-  corner = 0;
   insideReaction = 0;
 
   // selects grid class for masonry grid layout library
