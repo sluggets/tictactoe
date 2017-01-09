@@ -27,9 +27,6 @@ document.addEventListener("DOMContentLoaded", function() {
   // in order to win or avoid loss
   mandatoryPlay = 0;
 
-  // global flag to trigger a corner play
-  insideReaction = 0;
-
   // selects grid class for masonry grid layout library
   var elem = document.querySelector('.grid');
   
@@ -337,7 +334,6 @@ function resetGame()
 // finds the first empty square and plays there
 function findFirstEmpty()
 {
-  console.log("Inside findFirstEmpty()");
   for (var i = 1; i < 10; i++)
   {
     if (checkLocationStatus(i) == 0)
@@ -352,19 +348,19 @@ function findFirstEmpty()
   }
 }
 
-// does two things, of which I'm unsure the value of
+// does two things, in this order, of which I'm unsure the value of
 // just yet. 1) It will play an available corner that is
 // adjacent to a sideplay made by the user...
 // and 2) It will REACT to a corner play made by the
 // user with playing a side play
+// returns boolean whether or not play was made
+// inside this function
 function cornerPlay()
 {
   // variable that gets returned to 
   // trigger the next computer play of
   // first empty square or not triggered
   var cornerPlayMade = false;
-
-  console.log("INSIDE cornerPlay()");
 
   // arrays to loop through of corner slots
   // and side slots
@@ -453,7 +449,6 @@ function cornerPlay()
   // handling
   if (toPlay)
   {
-    console.log("Used toPlay to make a move!!");
     var crnrId = cpuChoice + toPlay;
     var crnrPlay = document.getElementById(crnrId); 
     crnrPlay.style.display = "block";
@@ -465,8 +460,6 @@ function cornerPlay()
            (checkLocationStatus(2) == 0 ||
             checkLocationStatus(4) == 0))
   {
-    console.log("inside reaction corner plays");
-    insideReaction = 1;
     if (checkLocationStatus(2) == 0)
     {
       var cpuTwoId = cpuChoice + 2;
@@ -490,8 +483,6 @@ function cornerPlay()
            (checkLocationStatus(2) == 0 ||
             checkLocationStatus(6) == 0))
   {
-    console.log("inside reaction corner plays");
-    insideReaction = 1;
     if (checkLocationStatus(2) == 0)
     {
       var cpuTwoId = cpuChoice + 2;
@@ -515,8 +506,6 @@ function cornerPlay()
            (checkLocationStatus(4) == 0 ||
             checkLocationStatus(8) == 0))
   {
-    console.log("inside reaction corner plays");
-    insideReaction = 1;
     if (checkLocationStatus(4) == 0)
     {
       var cpuFourId = cpuChoice + 4;
@@ -540,8 +529,6 @@ function cornerPlay()
            (checkLocationStatus(6) == 0 ||
             checkLocationStatus(8) == 0))
   {
-    console.log("inside reaction corner plays");
-    insideReaction = 1;
     if (checkLocationStatus(6) == 0)
     {
       var cpuSixId = cpuChoice + 6;
@@ -663,9 +650,7 @@ function checkSequence(seq, index)
       checkLocationStatus(toCheckTwo) == 0 ||
       checkLocationStatus(toCheckThree) == 0)
   {
-    //muting->console.log("mandatoryPlay triggered!->" + seq);
     mandatoryPlay = seq;
-    //muting->console.log("deleting: " + seq);
     winningSequences.splice(index, 1); 
   }
 
@@ -676,7 +661,6 @@ function checkSequence(seq, index)
       checkLocationStatus(toCheckTwo) != 0 &&
       checkLocationStatus(toCheckThree) != 0)
   {
-    console.log("deleting: " + seq + " inside second if");
     winningSequences.splice(index, 1); 
   } 
 
@@ -687,7 +671,6 @@ function checkSequence(seq, index)
 // to that corner
 function openCorner()
 {
-  console.log("INSIDE OPEN CORNER");
   // key-value pairs of played-counterplay actions
   cornerRange = {'1': [2, 4], '3': [2, 6], '9': [8, 6], '7': [4, 8]};
 
