@@ -270,7 +270,7 @@ function playComputerTurn(userLocNum)
 
   // if it IS the user's first play, it will
   // check to see if the first play is a corner
-  // then call openingCorner() to play the opposite
+  // then call openCorner() to play the opposite
   // corner
   if (ctr == 1 &&
       (checkLocationStatus(1) == 1 ||
@@ -278,7 +278,7 @@ function playComputerTurn(userLocNum)
        checkLocationStatus(7) == 1 ||
        checkLocationStatus(9) == 1))
   {
-    openingCorner();  
+    openCorner();  
     return;
   }
 
@@ -491,6 +491,7 @@ function cornerPlay()
             checkLocationStatus(6) == 0))
   {
     console.log("inside reaction corner plays");
+    insideReaction = 1;
     if (checkLocationStatus(2) == 0)
     {
       var cpuTwoId = cpuChoice + 2;
@@ -515,6 +516,7 @@ function cornerPlay()
             checkLocationStatus(8) == 0))
   {
     console.log("inside reaction corner plays");
+    insideReaction = 1;
     if (checkLocationStatus(4) == 0)
     {
       var cpuFourId = cpuChoice + 4;
@@ -539,6 +541,7 @@ function cornerPlay()
             checkLocationStatus(8) == 0))
   {
     console.log("inside reaction corner plays");
+    insideReaction = 1;
     if (checkLocationStatus(6) == 0)
     {
       var cpuSixId = cpuChoice + 6;
@@ -660,9 +663,9 @@ function checkSequence(seq, index)
       checkLocationStatus(toCheckTwo) == 0 ||
       checkLocationStatus(toCheckThree) == 0)
   {
-    console.log("mandatoryPlay triggered!->" + seq);
+    //muting->console.log("mandatoryPlay triggered!->" + seq);
     mandatoryPlay = seq;
-    console.log("deleting: " + seq);
+    //muting->console.log("deleting: " + seq);
     winningSequences.splice(index, 1); 
   }
 
@@ -680,21 +683,30 @@ function checkSequence(seq, index)
 }
 
 // if the user opens with a corner,
-// cpu will play opposite corner
-function openingCorner()
+// the cpu will play a square adjacent
+// to that corner
+function openCorner()
 {
+  console.log("INSIDE OPEN CORNER");
   // key-value pairs of played-counterplay actions
-  cornerRange = {'1': 9, '3': 7, '9': 1, '7': 3};
+  cornerRange = {'1': [2, 4], '3': [2, 6], '9': [8, 6], '7': [4, 8]};
 
   for (var key in cornerRange)
   {
     if (checkLocationStatus(key) == 1)
     {
-      var cpuId = cpuChoice + cornerRange[key];
-      var oppositeCorner = document.getElementById(cpuId);
-      oppositeCorner.style.display = "block";
-      recordMove(cornerRange[key], "cpu");
-      checkWinningCondition();
+      for (var item in cornerRange[key])
+      {
+        if (checkLocationStatus(cornerRange[key][item]) == 0)
+        {
+          var cpuId = cpuChoice + cornerRange[key][item];
+          var squareToPlay = document.getElementById(cpuId);
+          squareToPlay.style.display = "block";
+          recordMove(cornerRange[key][item], "cpu");
+          checkWinningCondition();
+          break;
+        } 
+      }
     }
   }
 }
