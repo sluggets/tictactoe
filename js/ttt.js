@@ -27,6 +27,11 @@ document.addEventListener("DOMContentLoaded", function() {
   // in order to win or avoid loss
   mandatoryPlay = 0;
 
+  // global to store location if user's second play
+  // is an opposite corner to an initially played
+  // corner
+  secondCorner = 0;
+
   // selects grid class for masonry grid layout library
   var elem = document.querySelector('.grid');
   
@@ -111,6 +116,26 @@ function displayMove(selection, usrChce)
     return;
   }
 
+  
+  var ctr = 1;
+  for (var item in playRecord)
+  {
+    if (playRecord[item].length != 0)
+    {
+      ctr++;
+    }
+  }
+  console.log("CTR: " + ctr);
+  if (ctr == 3)
+  {
+    if (locationNum == 1 ||
+        locationNum == 3 ||
+        locationNum == 7 ||
+        locationNum == 9)
+    {
+      secondCorner = locationNum;
+    }
+  }
   recordMove(locationNum, "user");
   var locationId = userChoice + locationNum;
   var locationToDisplay = document.getElementById(locationId)
@@ -254,8 +279,8 @@ function playComputerTurn(userLocNum)
     return;
   } 
  
-  // counts to see if this is the user's
-  // FIRST play
+  // counts to see if this is the 
+  // THIRD play made
   var ctr = 0;
   for (var item in playRecord)
   {
@@ -265,17 +290,14 @@ function playComputerTurn(userLocNum)
     }
   }
 
-  // if it IS the user's first play, it will
-  // check to see if the first play is a corner
-  // then call openCorner() to play the opposite
-  // corner
-  if (ctr == 1 &&
-      (checkLocationStatus(1) == 1 ||
-       checkLocationStatus(3) == 1 ||
-       checkLocationStatus(7) == 1 ||
-       checkLocationStatus(9) == 1))
+  // if it IS the THIRD play, it will
+  // check to see if it that third play is a 
+  // corner, then play square horizontally or
+  // vertically next to it
+  if (ctr == 3 && secondCorner != 0)
   {
-    openCorner();  
+    calcAdjacent();
+    secondCorner = 0;
     return;
   }
 
@@ -672,7 +694,7 @@ function checkSequence(seq, index)
 function openCorner()
 {
   // key-value pairs of played-counterplay actions
-  cornerRange = {'1': [2, 4], '3': [2, 6], '9': [8, 6], '7': [4, 8]};
+  var cornerRange = {'1': [2, 4], '3': [2, 6], '9': [8, 6], '7': [4, 8]};
 
   for (var key in cornerRange)
   {
@@ -692,4 +714,26 @@ function openCorner()
       }
     }
   }
+}
+
+// calculates the adjacent square horizontally
+// or vertically to a corner
+function calcAdjacent()
+{
+  var adjacentRange = {'1': [2, 4], '3': [2, 6], '9': [8, 6], '7': [4, 8]};
+
+  console.log("Gonna play adjacent to->" + secondCorner);
+  for (var key in adjacentRange)
+  {
+    if (key == secondCorner)
+    {
+      var cpuId = cpuChoice + adjacentRange[key][0];
+      var squareToPlay = document.getElementById(cpuId);
+      squareToPlay.style.display = "block";
+      recordMove(adjacentRange[key][0], "cpu");
+      checkWinningCondition();
+      break;
+    }
+  } 
+  
 }
