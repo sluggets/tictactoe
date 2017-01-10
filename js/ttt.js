@@ -27,8 +27,13 @@ document.addEventListener("DOMContentLoaded", function() {
   // in order to win or avoid loss
   mandatoryPlay = 0;
 
+  // global to store location of the FIRST corner 
+  // made by the cpu, in case of user playing the
+  // center square FIRST
+  firstCorner = 0;
+
   // global to store location if user's second play
-  // is an opposite corner to an initially played
+  // is a corner 
   // corner
   secondCorner = 0;
 
@@ -117,6 +122,8 @@ function displayMove(selection, usrChce)
   }
 
   
+  // counter to track number of plays made
+  // in order to react to the early plays
   var ctr = 1;
   for (var item in playRecord)
   {
@@ -125,7 +132,10 @@ function displayMove(selection, usrChce)
       ctr++;
     }
   }
-  console.log("CTR: " + ctr);
+
+  // if user plays a corner as a
+  // second move(3rd total play including
+  // cpu) then this move is stored
   if (ctr == 3)
   {
     if (locationNum == 1 ||
@@ -136,6 +146,7 @@ function displayMove(selection, usrChce)
       secondCorner = locationNum;
     }
   }
+
   recordMove(locationNum, "user");
   var locationId = userChoice + locationNum;
   var locationToDisplay = document.getElementById(locationId)
@@ -290,17 +301,16 @@ function playComputerTurn(userLocNum)
     }
   }
 
-  // if it IS the THIRD play, it will
-  // check to see if it that third play is a 
-  // corner, then play square horizontally or
-  // vertically next to it
+  // if it IS the THIRD play, AND user has
+  // played a second corner, then calcAdjacent
+  // is called which will handle that play
+  // depending upon whether or not user has
+  // the center square
   if (ctr == 3 && secondCorner != 0)
   {
     calcAdjacent();
-    secondCorner = 0;
     return;
   }
-
     
   // if middle square hasn't been played, this will
   // play it
@@ -477,6 +487,7 @@ function cornerPlay()
     recordMove(toPlay, "cpu");
     checkWinningCondition();
     cornerPlayMade = true;
+    firstCorner = toPlay;
   } 
   else if (checkLocationStatus(1) == 1 &&
            (checkLocationStatus(2) == 0 ||
@@ -716,24 +727,54 @@ function openCorner()
   }
 }
 
-// calculates the adjacent square horizontally
-// or vertically to a corner
+// either plays adjacent to a user's SECOND corner play
+// OR if center square is taken by user, will play an
+// appropriate corner
 function calcAdjacent()
 {
+  // object whose keys are possible user plays, values are
+  // arrays that hold acceptable cpu plays to that corner
   var adjacentRange = {'1': [2, 4], '3': [2, 6], '9': [8, 6], '7': [4, 8]};
+ 
+  // check which if either player has the center square
+  var fiveStatus = checkLocationStatus(5);
 
-  console.log("Gonna play adjacent to->" + secondCorner);
-  for (var key in adjacentRange)
+  // plays the adjacent square if center is unoccupied
+  if (fiveStatus != 1)
   {
-    if (key == secondCorner)
+    for (var key in adjacentRange) 
     {
-      var cpuId = cpuChoice + adjacentRange[key][0];
-      var squareToPlay = document.getElementById(cpuId);
-      squareToPlay.style.display = "block";
-      recordMove(adjacentRange[key][0], "cpu");
-      checkWinningCondition();
-      break;
+      if (key == secondCorner)
+      {
+        var cpuId = cpuChoice + adjacentRange[key][0];
+        var squareToPlay = document.getElementById(cpuId);
+        squareToPlay.style.display = "block";
+        recordMove(adjacentRange[key][0], "cpu");
+        checkWinningCondition();
+        break;
+      }
+    } 
+  }
+  else if (fiveStatus == 1)
+  {
+    // uses cornerTri to triangulate the correct
+    // corner response to user having the center
+    // and a corner
+    var toPlay = 0;
+    var cornerTri = firstCorner + secondCorner;
+    if (cornerTri == "91" || cornerTri == "19")
+    {
+      toPlay = 3; 
     }
-  } 
-  
+    else if (cornerTri == "37" || cornerTri == "73")
+    {
+      toPlay = 9;
+    }
+
+    var cpuId = cpuChoice + toPlay;
+    var squareToPlay = document.getElementById(cpuId);
+    squareToPlay.style.display = "block";
+    recordMove(toPlay, "cpu");
+    checkWinningCondition();
+  }
 }
