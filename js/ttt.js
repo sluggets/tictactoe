@@ -34,7 +34,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
   // global to store location if user's second play
   // is a corner 
-  // corner
   secondCorner = 0;
 
   // global to indicate end of game
@@ -43,10 +42,12 @@ document.addEventListener("DOMContentLoaded", function() {
   // global counter to store count of all plays
   globalCounter = 0;
 
-  // globals that store the user's first and second plays
+  // globals that store the user's first and second 
+  // and third plays
   firstUser = 0;
   secondUser = 0;
   thirdUser = 0;
+
   // selects grid class for masonry grid layout library
   var elem = document.querySelector('.grid');
   
@@ -166,8 +167,14 @@ function displayMove(selection, usrChce)
   var locationId = userChoice + locationNum;
   var locationToDisplay = document.getElementById(locationId)
   locationToDisplay.style.display = "block";
+
+  // increments a global counter to better track total
+  // number of plays for  strategic functions
   globalCounter++;
-  console.log("global counter->" + globalCounter);
+
+  // stores what plays the user made for
+  // their first, second, and third plays
+  // to detect correct strategy
   if (globalCounter == 1)
   {
     firstUser = locationNum;  
@@ -182,6 +189,7 @@ function displayMove(selection, usrChce)
   {
     thirdUser = locationNum;
   }
+
   checkWinningCondition();
   checkForTie();
   playComputerTurn(locationNum);
@@ -298,12 +306,18 @@ function checkForTie()
 // or specific incorrect plays by the user
 function playComputerTurn(userLocNum)
 {
+  // went ahead and added an endOfGame flag
+  // in case play gets handed to the computer
+  // when the game is in fact done
   if (endOfGame)
   {
     return;
   }
 
+  // increments global counter to track total
+  // number plays made of cpu AND user
   globalCounter++;
+
   // checks to see if any two-in-rows are there
   // that the cpu needs to block
   checkForMandatoryPlay(); 
@@ -311,7 +325,6 @@ function playComputerTurn(userLocNum)
   // if there are, then block them
   if (mandatoryPlay)
   {
-    console.log("mandatoryPlay" + mandatoryPlay);
     for (var loc in mandatoryPlay)
     {
       var tempLoc = mandatoryPlay[loc];
@@ -329,23 +342,39 @@ function playComputerTurn(userLocNum)
     return;
   } 
  
+  // if there have been four plays made,
+  // better check to see if snakePlay 
+  // strategy needs to be played, basically
+  // a response to a snake tetriminoe design
+  // [u][ ][ ]
+  // [u][u][ ] 
+  // [ ][u][ ]
   if (globalCounter == 4)
   {
-    console.log("gonna enter snakePlay()");
     var snakeResult = snakePlay();
   }
 
+  // if the snakePlay was made, return 
+  // play to the user!
   if (snakeResult)
   {
     return;
   }
 
+  // if there have been six plays made,
+  // better check to see if the fork play
+  // needs to be made, a response to a 
+  // fork design
+  // [u][ ][u]
+  // [ ][u][ ]
+  // [ ][ ][ ]
   if (globalCounter == 6)
   {
-    console.log("gonna enter forkPlay()");
     var forkResult = forkPlay();
   }
 
+  // if the forkPlay was made, hand
+  // off play to the user
   if (forkResult)
   {
     return;
@@ -368,7 +397,6 @@ function playComputerTurn(userLocNum)
   // the center square
   if (ctr == 3 && secondCorner != 0)
   {
-    console.log("entering calcAdjacent()");
     var calcResult = calcAdjacent();
   }
     
@@ -376,6 +404,7 @@ function playComputerTurn(userLocNum)
   {
     return;
   }
+
   // if middle square hasn't been played, this will
   // play it
   if (checkLocationStatus(5) == 0)
@@ -430,7 +459,7 @@ function resetGame()
 // finds the first empty square and plays there
 function findFirstEmpty()
 {
-  console.log("Inside findFirstEmpty()");
+  console.log("INSIDE findFirstEmpty()");
   for (var i = 1; i < 10; i++)
   {
     if (checkLocationStatus(i) == 0)
@@ -454,7 +483,6 @@ function findFirstEmpty()
 // inside this function
 function cornerPlay()
 {
-  console.log("Inside cornerPlay()");
   // variable that gets returned to 
   // trigger the next computer play of
   // first empty square or not triggered
@@ -501,7 +529,6 @@ function cornerPlay()
   {
     if (oneStatus == 0)
     {
-      console.log("Assigning toPlay 1 in first if");
       toPlay = 1;
     }
     else if (threeStatus == 0)
@@ -539,7 +566,6 @@ function cornerPlay()
     }
     else if (oneStatus == 0)
     {
-      console.log("assigning toPlay 1 in LAST if");
       toPlay = 1;
     }
   }
@@ -559,7 +585,6 @@ function cornerPlay()
   {
     if (sevenStatus == 0)
     {
-      console.log("setting toPlay to: 7");
       toPlay = 7;
     }
   }
@@ -574,7 +599,6 @@ function cornerPlay()
     }
   }
 
-  console.log("toPlay->" + toPlay);
   // if toPlay was successfully assigned something 
   // other than zero in the previous code, then that
   // toPlay corner will be made here
@@ -871,9 +895,6 @@ function calcAdjacent()
 
 function snakePlay()
 {
-  console.log("INSIDE snakePlay()");
-  console.log("firstUser->" + firstUser);
-  console.log("secondUser->" + secondUser);
   var snakePlayed = 0;
   if (firstUser == 8 &&
       secondUser == 1)
