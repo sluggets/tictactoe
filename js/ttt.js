@@ -37,6 +37,16 @@ document.addEventListener("DOMContentLoaded", function() {
   // corner
   secondCorner = 0;
 
+  // global to indicate end of game
+  endOfGame = 0;
+
+  // global counter to store count of all plays
+  globalCounter = 0;
+
+  // globals that store the user's first and second plays
+  firstUser = 0;
+  secondUser = 0;
+  thirdUser = 0;
   // selects grid class for masonry grid layout library
   var elem = document.querySelector('.grid');
   
@@ -98,6 +108,11 @@ function removePrompt()
     playRecord[i] = [];
   } 
 
+  endOfGame = 0;
+  globalCounter = 0;
+  firstUser = 0;
+  secondUser = 0;
+  thirdUser = 0;
 }
 
 // gets the prompt back to start new game
@@ -151,6 +166,22 @@ function displayMove(selection, usrChce)
   var locationId = userChoice + locationNum;
   var locationToDisplay = document.getElementById(locationId)
   locationToDisplay.style.display = "block";
+  globalCounter++;
+  console.log("global counter->" + globalCounter);
+  if (globalCounter == 1)
+  {
+    firstUser = locationNum;  
+  }
+  
+  if (globalCounter == 3)
+  {
+    secondUser = locationNum;
+  }
+
+  if (globalCounter == 5)
+  {
+    thirdUser = locationNum;
+  }
   checkWinningCondition();
   checkForTie();
   playComputerTurn(locationNum);
@@ -253,6 +284,7 @@ function checkForTie()
   // has not been called, it MUST be a tie
   if (ctr == 9)
   {
+    endOfGame = 1;
     triggerEndGame('tie');
   }
   else
@@ -266,6 +298,12 @@ function checkForTie()
 // or specific incorrect plays by the user
 function playComputerTurn(userLocNum)
 {
+  if (endOfGame)
+  {
+    return;
+  }
+
+  globalCounter++;
   // checks to see if any two-in-rows are there
   // that the cpu needs to block
   checkForMandatoryPlay(); 
@@ -273,6 +311,7 @@ function playComputerTurn(userLocNum)
   // if there are, then block them
   if (mandatoryPlay)
   {
+    console.log("mandatoryPlay" + mandatoryPlay);
     for (var loc in mandatoryPlay)
     {
       var tempLoc = mandatoryPlay[loc];
@@ -290,6 +329,27 @@ function playComputerTurn(userLocNum)
     return;
   } 
  
+  if (globalCounter == 4)
+  {
+    console.log("gonna enter snakePlay()");
+    var snakeResult = snakePlay();
+  }
+
+  if (snakeResult)
+  {
+    return;
+  }
+
+  if (globalCounter == 6)
+  {
+    console.log("gonna enter forkPlay()");
+    var forkResult = forkPlay();
+  }
+
+  if (forkResult)
+  {
+    return;
+  }
   // counts to see if this is the 
   // THIRD play made
   var ctr = 0;
@@ -308,10 +368,14 @@ function playComputerTurn(userLocNum)
   // the center square
   if (ctr == 3 && secondCorner != 0)
   {
-    calcAdjacent();
-    return;
+    console.log("entering calcAdjacent()");
+    var calcResult = calcAdjacent();
   }
     
+  if (calcResult)
+  {
+    return;
+  }
   // if middle square hasn't been played, this will
   // play it
   if (checkLocationStatus(5) == 0)
@@ -366,6 +430,7 @@ function resetGame()
 // finds the first empty square and plays there
 function findFirstEmpty()
 {
+  console.log("Inside findFirstEmpty()");
   for (var i = 1; i < 10; i++)
   {
     if (checkLocationStatus(i) == 0)
@@ -389,6 +454,7 @@ function findFirstEmpty()
 // inside this function
 function cornerPlay()
 {
+  console.log("Inside cornerPlay()");
   // variable that gets returned to 
   // trigger the next computer play of
   // first empty square or not triggered
@@ -405,6 +471,10 @@ function cornerPlay()
   var threeStatus = checkLocationStatus(3);
   var sevenStatus = checkLocationStatus(7);
   var nineStatus = checkLocationStatus(9);
+  var sixStatus = checkLocationStatus(6);
+  var eightStatus = checkLocationStatus(8);
+  var twoStatus = checkLocationStatus(2);
+  
 
   // variable to store what corner to play in.
   // if toPlay does not get reassigned an
@@ -426,11 +496,12 @@ function cornerPlay()
 
   // this series of if/else statements changes toPlay
   // based off of whether or not there are user side plays
-  // to play corners off of
+  // to play corners off of 
   if (checkLocationStatus(2) == 1)
   {
     if (oneStatus == 0)
     {
+      console.log("Assigning toPlay 1 in first if");
       toPlay = 1;
     }
     else if (threeStatus == 0)
@@ -468,10 +539,42 @@ function cornerPlay()
     }
     else if (oneStatus == 0)
     {
+      console.log("assigning toPlay 1 in LAST if");
       toPlay = 1;
     }
   }
 
+  // the following two if statements handle two 
+  // variations on this situation:
+  //    [ ][u][ ]
+  //    [c][c][u]
+  //    [u][ ][ ]
+  // two of the permutations above out of four, the cpu
+  // would play 1 slot instead of 3 or 9
+  // the other two permutations seem to be handled by
+  // normal algorithm
+  if(oneStatus == 1 &&
+          sixStatus == 1 &&
+          eightStatus == 1)
+  {
+    if (sevenStatus == 0)
+    {
+      console.log("setting toPlay to: 7");
+      toPlay = 7;
+    }
+  }
+
+  if (sevenStatus == 1 &&
+           twoStatus == 1 &&
+           sixStatus == 1)
+  {
+    if (nineStatus == 0)
+    {
+      toPlay = 9;
+    }
+  }
+
+  console.log("toPlay->" + toPlay);
   // if toPlay was successfully assigned something 
   // other than zero in the previous code, then that
   // toPlay corner will be made here
@@ -487,12 +590,15 @@ function cornerPlay()
     recordMove(toPlay, "cpu");
     checkWinningCondition();
     cornerPlayMade = true;
+    // global variable gets assigned first corner
+    // played by cpu
     firstCorner = toPlay;
   } 
   else if (checkLocationStatus(1) == 1 &&
            (checkLocationStatus(2) == 0 ||
             checkLocationStatus(4) == 0))
   {
+    console.log("Inside second part of cornerPlay()");
     if (checkLocationStatus(2) == 0)
     {
       var cpuTwoId = cpuChoice + 2;
@@ -516,6 +622,7 @@ function cornerPlay()
            (checkLocationStatus(2) == 0 ||
             checkLocationStatus(6) == 0))
   {
+    console.log("Inside second part of cornerPlay()");
     if (checkLocationStatus(2) == 0)
     {
       var cpuTwoId = cpuChoice + 2;
@@ -539,6 +646,7 @@ function cornerPlay()
            (checkLocationStatus(4) == 0 ||
             checkLocationStatus(8) == 0))
   {
+    console.log("Inside second part of cornerPlay()");
     if (checkLocationStatus(4) == 0)
     {
       var cpuFourId = cpuChoice + 4;
@@ -562,6 +670,7 @@ function cornerPlay()
            (checkLocationStatus(6) == 0 ||
             checkLocationStatus(8) == 0))
   {
+    console.log("Inside second part of cornerPlay()");
     if (checkLocationStatus(6) == 0)
     {
       var cpuSixId = cpuChoice + 6;
@@ -699,39 +808,12 @@ function checkSequence(seq, index)
 
 }
 
-// if the user opens with a corner,
-// the cpu will play a square adjacent
-// to that corner
-function openCorner()
-{
-  // key-value pairs of played-counterplay actions
-  var cornerRange = {'1': [2, 4], '3': [2, 6], '9': [8, 6], '7': [4, 8]};
-
-  for (var key in cornerRange)
-  {
-    if (checkLocationStatus(key) == 1)
-    {
-      for (var item in cornerRange[key])
-      {
-        if (checkLocationStatus(cornerRange[key][item]) == 0)
-        {
-          var cpuId = cpuChoice + cornerRange[key][item];
-          var squareToPlay = document.getElementById(cpuId);
-          squareToPlay.style.display = "block";
-          recordMove(cornerRange[key][item], "cpu");
-          checkWinningCondition();
-          break;
-        } 
-      }
-    }
-  }
-}
-
 // either plays adjacent to a user's SECOND corner play
 // OR if center square is taken by user, will play an
 // appropriate corner
 function calcAdjacent()
 {
+  var adjacentPlay = false;
   // object whose keys are possible user plays, values are
   // arrays that hold acceptable cpu plays to that corner
   var adjacentRange = {'1': [2, 4], '3': [2, 6], '9': [8, 6], '7': [4, 8]};
@@ -744,8 +826,10 @@ function calcAdjacent()
   {
     for (var key in adjacentRange) 
     {
-      if (key == secondCorner)
+      if (key == secondCorner && 
+          checkLocationStatus(adjacentRange[key][0]) == 0)
       {
+        adjacentPlay = true;
         var cpuId = cpuChoice + adjacentRange[key][0];
         var squareToPlay = document.getElementById(cpuId);
         squareToPlay.style.display = "block";
@@ -762,12 +846,16 @@ function calcAdjacent()
     // and a corner
     var toPlay = 0;
     var cornerTri = firstCorner + secondCorner;
-    if (cornerTri == "91" || cornerTri == "19")
+    if ((cornerTri == "91" || cornerTri == "19") &&
+        checkLocationStatus(3) == 0)
     {
+      adjacentPlay = true;
       toPlay = 3; 
     }
-    else if (cornerTri == "37" || cornerTri == "73")
+    else if ((cornerTri == "37" || cornerTri == "73") &&
+             checkLocationStatus(9) == 0)
     {
+      adjacentPlay = true;
       toPlay = 9;
     }
 
@@ -777,4 +865,85 @@ function calcAdjacent()
     recordMove(toPlay, "cpu");
     checkWinningCondition();
   }
+
+  return adjacentPlay;
+}
+
+function snakePlay()
+{
+  console.log("INSIDE snakePlay()");
+  console.log("firstUser->" + firstUser);
+  console.log("secondUser->" + secondUser);
+  var snakePlayed = 0;
+  if (firstUser == 8 &&
+      secondUser == 1)
+  {
+    if (checkLocationStatus(4) == 0)
+    {
+      snakePlayed = 4;
+    }
+  }    
+  else if (firstUser == 2 &&
+           secondUser == 9)
+  {
+    if (checkLocationStatus(6) == 0)
+    {
+      snakePlayed = 6;
+    }
+  }
+  else if (firstUser == 6 &&
+           secondUser == 7)
+  {
+    if (checkLocationStatus(8) == 0)
+    {
+      snakePlayed = 8;
+    }
+  }
+
+  if (snakePlayed)
+  {
+    var cpuId = cpuChoice + snakePlayed;
+    var snakeMove = document.getElementById(cpuId);
+    snakeMove.style.display = "block";
+    recordMove(snakePlayed, "cpu");
+    checkWinningCondition();
+  }
+
+  return snakePlayed;
+}
+
+function forkPlay()
+{
+  var forkPlayed = 0;
+
+  if (firstUser == 8 &&
+      secondUser == 1 &&
+      thirdUser == 6)
+  {
+    if (checkLocationStatus(3) == 0)
+    {
+      forkPlayed = 3;
+    }
+  }   
+
+  if (firstUser == 6 &&
+      secondUser == 7 &&
+      thirdUser == 2)
+  {
+    if (checkLocationStatus(1) == 0)
+    {
+      forkPlayed = 1;
+    }
+  }
+
+  if (forkPlayed)
+  {
+    var cpuId = cpuChoice + forkPlayed;
+    var forkMove = document.getElementById(cpuId);
+    forkMove.style.display = "block";
+    recordMove(forkPlayed, "cpu");
+    checkWinningCondition();
+  }
+
+  return forkPlayed;
 }
