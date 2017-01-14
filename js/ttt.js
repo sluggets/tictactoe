@@ -114,6 +114,8 @@ function removePrompt()
   firstUser = 0;
   secondUser = 0;
   thirdUser = 0;
+  firstCorner = 0;
+  secondCorner = 0;
 }
 
 // gets the prompt back to start new game
@@ -171,7 +173,7 @@ function displayMove(selection, usrChce)
   // increments a global counter to better track total
   // number of plays for  strategic functions
   globalCounter++;
-
+  console.log("inside user turn: globalCounter->" + globalCounter);
   // stores what plays the user made for
   // their first, second, and third plays
   // to detect correct strategy
@@ -317,6 +319,7 @@ function playComputerTurn(userLocNum)
   // increments global counter to track total
   // number plays made of cpu AND user
   globalCounter++;
+  console.log("inside cpu turn: globalCounter->" + globalCounter);
 
   // checks to see if any two-in-rows are there
   // that the cpu needs to block
@@ -341,7 +344,74 @@ function playComputerTurn(userLocNum)
     }
     return;
   } 
+
+  if (globalCounter == 6 && 
+      firstUser == 8 &&
+      secondUser == 3 &&
+      thirdUser == 4)
+  {
+    var treeRes = treePlay();
+  } 
+
+  if (treeRes)
+  {
+    return;
+  }
+  // if there have been six plays made,
+  // better check to see if the fork play
+  // needs to be made, a response to a 
+  // fork design
+  // [u][ ][u]
+  // [ ][u][ ]
+  // [ ][ ][ ]
+  if (globalCounter == 6)
+  {
+    console.log("gonna go in forkplay ");
+    var forkResult = forkPlay();
+  }
+
+  // if the forkPlay was made, hand
+  // off play to the user
+  if (forkResult)
+  {
+    return;
+  }
  
+
+  // counts to see if this is the 
+  // THIRD play made
+  /*var ctr = 0;
+  for (var item in playRecord)
+  {
+    if (playRecord[item].length != 0)
+    {
+      ctr++;
+    }
+  }*/
+  if (globalCounter == 4 &&
+      firstUser == 1 &&
+      secondUser == 9)
+  {
+    var diagonalResult = diagonalPlay();
+  }
+
+  if (diagonalResult)
+  {
+    return;
+  }
+
+  if (globalCounter == 4 &&
+      firstUser == 8 &&
+      secondUser == 3)
+  {
+    var horseResult = horsePlay();
+  }
+
+  if (horseResult)
+  {
+    return;
+  }
+
   // if there have been four plays made,
   // better check to see if snakePlay 
   // strategy needs to be played, basically
@@ -351,6 +421,10 @@ function playComputerTurn(userLocNum)
   // [ ][u][ ]
   if (globalCounter == 4)
   {
+    console.log("gonna go in snakeplay ");
+    console.log("firstUser->" + firstUser);
+    console.log("secondUser->" + secondUser);
+    console.log("thirdUser->" + thirdUser);
     var snakeResult = snakePlay();
   }
 
@@ -361,42 +435,15 @@ function playComputerTurn(userLocNum)
     return;
   }
 
-  // if there have been six plays made,
-  // better check to see if the fork play
-  // needs to be made, a response to a 
-  // fork design
-  // [u][ ][u]
-  // [ ][u][ ]
-  // [ ][ ][ ]
-  if (globalCounter == 6)
-  {
-    var forkResult = forkPlay();
-  }
-
-  // if the forkPlay was made, hand
-  // off play to the user
-  if (forkResult)
-  {
-    return;
-  }
-  // counts to see if this is the 
-  // THIRD play made
-  var ctr = 0;
-  for (var item in playRecord)
-  {
-    if (playRecord[item].length != 0)
-    {
-      ctr++;
-    }
-  }
-
   // if it IS the THIRD play, AND user has
   // played a second corner, then calcAdjacent
   // is called which will handle that play
   // depending upon whether or not user has
   // the center square
-  if (ctr == 3 && secondCorner != 0)
+  //if (ctr == 3 && secondCorner != 0)
+  if (globalCounter == 4 && secondCorner != 0)
   {
+    console.log("gonna go in calcAdjacent ");
     var calcResult = calcAdjacent();
   }
     
@@ -483,6 +530,8 @@ function findFirstEmpty()
 // inside this function
 function cornerPlay()
 {
+  
+  console.log("inside cornerplay ");
   // variable that gets returned to 
   // trigger the next computer play of
   // first empty square or not triggered
@@ -923,6 +972,7 @@ function snakePlay()
 
   if (snakePlayed)
   {
+    console.log("actually playing snakePlay");
     var cpuId = cpuChoice + snakePlayed;
     var snakeMove = document.getElementById(cpuId);
     snakeMove.style.display = "block";
@@ -967,4 +1017,79 @@ function forkPlay()
   }
 
   return forkPlayed;
+}
+
+function horsePlay()
+{
+  var horseRes = 0;
+  if (checkLocationStatus(6) == 0)
+  {
+    console.log("inside six, set horseRes to 6");
+    var horseRes = 6; 
+  }
+  else if (checkLocationStatus(9) == 0)
+  {
+    console.log("inside sine, set horseRes to 9");
+    var horseRes = 9;
+  }
+
+  if (horseRes)
+  {
+    var cpuId = cpuChoice + horseRes;
+    var horseMove = document.getElementById(cpuId);
+    horseMove.style.display = "block";
+    recordMove(horseRes, "cpu");
+    checkWinningCondition();
+  }
+
+  return horseRes;
+}
+
+function diagonalPlay()
+{
+  console.log("Inside diagonalPlay()");
+  var diagPlay = 0;
+  
+  if (checkLocationStatus(6) == 0)
+  {
+    diagPlay = 6;
+  }
+  else if (checkLocationStatus(4) == 0)
+  {
+    diagPlay = 4;
+  }
+
+  if (diagPlay)
+  {
+    var cpuId = cpuChoice + diagPlay;
+    var diagPlayed = document.getElementById(cpuId);
+    diagPlayed.style.display = "block";
+    recordMove(diagPlay, "cpu");
+    checkWinningCondition();
+  }
+
+  return diagPlay;
+}
+
+function treePlay()
+{
+  var treePlayed = 0;
+  if (checkLocationStatus(1) == 0)
+  {
+    treePlayed = 1;
+  }
+  else if (checkLocationStatus(7) == 0)
+  {
+    treePlayed = 7;
+  }
+
+  if (treePlayed)
+  {
+    var cpuId = cpuChoice + treePlayed;
+    var treeMove = document.getElementById(cpuId);
+    treeMove.style.display = "block";
+    recordMove(treePlayed, "cpu");
+  }
+
+  return treePlayed;
 }
