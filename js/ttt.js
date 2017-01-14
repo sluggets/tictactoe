@@ -139,22 +139,19 @@ function displayMove(selection, usrChce)
     return;
   }
 
-  
-  // counter to track number of plays made
-  // in order to react to the early plays
-  var ctr = 1;
-  for (var item in playRecord)
-  {
-    if (playRecord[item].length != 0)
-    {
-      ctr++;
-    }
-  }
+  recordMove(locationNum, "user");
+  var locationId = userChoice + locationNum;
+  var locationToDisplay = document.getElementById(locationId)
+  locationToDisplay.style.display = "block";
+
+  // increments a global counter to better track total
+  // number of plays for  strategic functions
+  globalCounter++;
 
   // if user plays a corner as a
   // second move(3rd total play including
   // cpu) then this move is stored
-  if (ctr == 3)
+  if (globalCounter == 3)
   {
     if (locationNum == 1 ||
         locationNum == 3 ||
@@ -165,15 +162,6 @@ function displayMove(selection, usrChce)
     }
   }
 
-  recordMove(locationNum, "user");
-  var locationId = userChoice + locationNum;
-  var locationToDisplay = document.getElementById(locationId)
-  locationToDisplay.style.display = "block";
-
-  // increments a global counter to better track total
-  // number of plays for  strategic functions
-  globalCounter++;
-  console.log("inside user turn: globalCounter->" + globalCounter);
   // stores what plays the user made for
   // their first, second, and third plays
   // to detect correct strategy
@@ -319,7 +307,6 @@ function playComputerTurn(userLocNum)
   // increments global counter to track total
   // number plays made of cpu AND user
   globalCounter++;
-  console.log("inside cpu turn: globalCounter->" + globalCounter);
 
   // checks to see if any two-in-rows are there
   // that the cpu needs to block
@@ -328,6 +315,7 @@ function playComputerTurn(userLocNum)
   // if there are, then block them
   if (mandatoryPlay)
   {
+    console.log("Playing mandatory play!");
     for (var loc in mandatoryPlay)
     {
       var tempLoc = mandatoryPlay[loc];
@@ -355,6 +343,7 @@ function playComputerTurn(userLocNum)
 
   if (treeRes)
   {
+    console.log("Playing treePlay()");
     return;
   }
   // if there have been six plays made,
@@ -366,7 +355,6 @@ function playComputerTurn(userLocNum)
   // [ ][ ][ ]
   if (globalCounter == 6)
   {
-    console.log("gonna go in forkplay ");
     var forkResult = forkPlay();
   }
 
@@ -374,20 +362,10 @@ function playComputerTurn(userLocNum)
   // off play to the user
   if (forkResult)
   {
+    console.log("Played forkPlay()");
     return;
   }
  
-
-  // counts to see if this is the 
-  // THIRD play made
-  /*var ctr = 0;
-  for (var item in playRecord)
-  {
-    if (playRecord[item].length != 0)
-    {
-      ctr++;
-    }
-  }*/
   if (globalCounter == 4 &&
       firstUser == 1 &&
       secondUser == 9)
@@ -397,6 +375,7 @@ function playComputerTurn(userLocNum)
 
   if (diagonalResult)
   {
+    console.log("diagonalPlay() was made");
     return;
   }
 
@@ -409,6 +388,7 @@ function playComputerTurn(userLocNum)
 
   if (horseResult)
   {
+    console.log("horsePlay() was made");
     return;
   }
 
@@ -421,10 +401,6 @@ function playComputerTurn(userLocNum)
   // [ ][u][ ]
   if (globalCounter == 4)
   {
-    console.log("gonna go in snakeplay ");
-    console.log("firstUser->" + firstUser);
-    console.log("secondUser->" + secondUser);
-    console.log("thirdUser->" + thirdUser);
     var snakeResult = snakePlay();
   }
 
@@ -432,6 +408,7 @@ function playComputerTurn(userLocNum)
   // play to the user!
   if (snakeResult)
   {
+    console.log("snakePlay() was made");
     return;
   }
 
@@ -443,12 +420,12 @@ function playComputerTurn(userLocNum)
   //if (ctr == 3 && secondCorner != 0)
   if (globalCounter == 4 && secondCorner != 0)
   {
-    console.log("gonna go in calcAdjacent ");
     var calcResult = calcAdjacent();
   }
     
   if (calcResult)
   {
+    console.log("calcAdjacent() was made");
     return;
   }
 
@@ -501,24 +478,6 @@ function resetGame()
   
   // puts player selection prompt back up to start new game
   restorePrompt();
-}
-
-// finds the first empty square and plays there
-function findFirstEmpty()
-{
-  console.log("INSIDE findFirstEmpty()");
-  for (var i = 1; i < 10; i++)
-  {
-    if (checkLocationStatus(i) == 0)
-    {
-      var cpuId = cpuChoice + i;
-      var firstPlay = document.getElementById(cpuId);  
-      firstPlay.style.display = "block";
-      recordMove(i, "cpu");
-      checkWinningCondition();
-      break;
-    } 
-  }
 }
 
 // does two things, in this order, of which I'm unsure the value of
@@ -972,7 +931,6 @@ function snakePlay()
 
   if (snakePlayed)
   {
-    console.log("actually playing snakePlay");
     var cpuId = cpuChoice + snakePlayed;
     var snakeMove = document.getElementById(cpuId);
     snakeMove.style.display = "block";
@@ -1024,12 +982,10 @@ function horsePlay()
   var horseRes = 0;
   if (checkLocationStatus(6) == 0)
   {
-    console.log("inside six, set horseRes to 6");
     var horseRes = 6; 
   }
   else if (checkLocationStatus(9) == 0)
   {
-    console.log("inside sine, set horseRes to 9");
     var horseRes = 9;
   }
 
@@ -1047,7 +1003,6 @@ function horsePlay()
 
 function diagonalPlay()
 {
-  console.log("Inside diagonalPlay()");
   var diagPlay = 0;
   
   if (checkLocationStatus(6) == 0)
