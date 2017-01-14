@@ -109,6 +109,8 @@ function removePrompt()
     playRecord[i] = [];
   } 
 
+  // clears a bunch of globals used for
+  // cpu play 
   endOfGame = 0;
   globalCounter = 0;
   firstUser = 0;
@@ -139,6 +141,7 @@ function displayMove(selection, usrChce)
     return;
   }
 
+  // makes the user's play, and records the move to playRecord
   recordMove(locationNum, "user");
   var locationId = userChoice + locationNum;
   var locationToDisplay = document.getElementById(locationId)
@@ -315,7 +318,6 @@ function playComputerTurn(userLocNum)
   // if there are, then block them
   if (mandatoryPlay)
   {
-    console.log("Playing mandatory play!");
     for (var loc in mandatoryPlay)
     {
       var tempLoc = mandatoryPlay[loc];
@@ -333,6 +335,8 @@ function playComputerTurn(userLocNum)
     return;
   } 
 
+  // checks for a specific course of play
+  // after six plays and uses custom function for it
   if (globalCounter == 6 && 
       firstUser == 8 &&
       secondUser == 3 &&
@@ -341,18 +345,15 @@ function playComputerTurn(userLocNum)
     var treeRes = treePlay();
   } 
 
+  // if treePlay was made, hand off play to user
   if (treeRes)
   {
-    console.log("Playing treePlay()");
     return;
   }
-  // if there have been six plays made,
-  // better check to see if the fork play
-  // needs to be made, a response to a 
-  // fork design
-  // [u][ ][u]
-  // [ ][u][ ]
-  // [ ][ ][ ]
+
+  // if six plays have been made, checks
+  // to see if forkPlay response needs to
+  // be made
   if (globalCounter == 6)
   {
     var forkResult = forkPlay();
@@ -362,10 +363,11 @@ function playComputerTurn(userLocNum)
   // off play to the user
   if (forkResult)
   {
-    console.log("Played forkPlay()");
     return;
   }
  
+  // checks for specific course of play
+  // on the fourth turn
   if (globalCounter == 4 &&
       firstUser == 1 &&
       secondUser == 9)
@@ -373,12 +375,15 @@ function playComputerTurn(userLocNum)
     var diagonalResult = diagonalPlay();
   }
 
+  // if the diagonalPlay was made, hand off
+  // play to the user
   if (diagonalResult)
   {
-    console.log("diagonalPlay() was made");
     return;
   }
 
+  // checks for specific course of play
+  // if this is the fourth turn
   if (globalCounter == 4 &&
       firstUser == 8 &&
       secondUser == 3)
@@ -386,29 +391,25 @@ function playComputerTurn(userLocNum)
     var horseResult = horsePlay();
   }
 
+  // if the horsePlay was made, hands off
+  // play to the user
   if (horseResult)
   {
-    console.log("horsePlay() was made");
     return;
   }
 
   // if there have been four plays made,
   // better check to see if snakePlay 
-  // strategy needs to be played, basically
-  // a response to a snake tetriminoe design
-  // [u][ ][ ]
-  // [u][u][ ] 
-  // [ ][u][ ]
+  // strategy needs to be played
   if (globalCounter == 4)
   {
     var snakeResult = snakePlay();
   }
 
   // if the snakePlay was made, return 
-  // play to the user!
+  // play to the user
   if (snakeResult)
   {
-    console.log("snakePlay() was made");
     return;
   }
 
@@ -417,15 +418,15 @@ function playComputerTurn(userLocNum)
   // is called which will handle that play
   // depending upon whether or not user has
   // the center square
-  //if (ctr == 3 && secondCorner != 0)
   if (globalCounter == 4 && secondCorner != 0)
   {
     var calcResult = calcAdjacent();
   }
     
+  // if the calcAdjacent play was made,
+  // returns play to the user
   if (calcResult)
   {
-    console.log("calcAdjacent() was made");
     return;
   }
 
@@ -444,14 +445,6 @@ function playComputerTurn(userLocNum)
   // variable stores boolean of whether cornerPlay 
   // was made or not
   var cornerPlayMade = cornerPlay();
- 
-  // if cornerPlay() did not make a play 
-  // according to its algorithm, we will
-  // play the first empty spot encountered
-  if (!cornerPlayMade)
-  { 
-    findFirstEmpty();
-  }
 }
 
 // triggers winner header to appear and calls 
@@ -490,7 +483,6 @@ function resetGame()
 function cornerPlay()
 {
   
-  console.log("inside cornerplay ");
   // variable that gets returned to 
   // trigger the next computer play of
   // first empty square or not triggered
@@ -630,7 +622,6 @@ function cornerPlay()
            (checkLocationStatus(2) == 0 ||
             checkLocationStatus(4) == 0))
   {
-    console.log("Inside second part of cornerPlay()");
     if (checkLocationStatus(2) == 0)
     {
       var cpuTwoId = cpuChoice + 2;
@@ -654,7 +645,6 @@ function cornerPlay()
            (checkLocationStatus(2) == 0 ||
             checkLocationStatus(6) == 0))
   {
-    console.log("Inside second part of cornerPlay()");
     if (checkLocationStatus(2) == 0)
     {
       var cpuTwoId = cpuChoice + 2;
@@ -678,7 +668,6 @@ function cornerPlay()
            (checkLocationStatus(4) == 0 ||
             checkLocationStatus(8) == 0))
   {
-    console.log("Inside second part of cornerPlay()");
     if (checkLocationStatus(4) == 0)
     {
       var cpuFourId = cpuChoice + 4;
@@ -702,7 +691,6 @@ function cornerPlay()
            (checkLocationStatus(6) == 0 ||
             checkLocationStatus(8) == 0))
   {
-    console.log("Inside second part of cornerPlay()");
     if (checkLocationStatus(6) == 0)
     {
       var cpuSixId = cpuChoice + 6;
@@ -840,6 +828,12 @@ function checkSequence(seq, index)
 
 }
 
+/* ---The next six functions handle responses to specific
+sequences of play. If they make a play, they return a boolean
+to the calling function (playComputerTurn) to indicate a play
+was made to let that function know to either return play to
+the user, or keep looking for an adequate play. --- */
+
 // either plays adjacent to a user's SECOND corner play
 // OR if center square is taken by user, will play an
 // appropriate corner
@@ -901,9 +895,14 @@ function calcAdjacent()
   return adjacentPlay;
 }
 
+// responds to snake pattern
 function snakePlay()
 {
+  // boolean if play made
   var snakePlayed = 0;
+
+  // checks user's first and second plays to 
+  // respond appropriately
   if (firstUser == 8 &&
       secondUser == 1)
   {
@@ -929,6 +928,7 @@ function snakePlay()
     }
   }
 
+  // makes the play
   if (snakePlayed)
   {
     var cpuId = cpuChoice + snakePlayed;
@@ -938,13 +938,18 @@ function snakePlay()
     checkWinningCondition();
   }
 
+  // tells calling function if play was made here
   return snakePlayed;
 }
 
+// responds to fork pattern
 function forkPlay()
 {
+  // boolean if play made 
   var forkPlayed = 0;
 
+  // checks user's first, second, and third plays
+  // to accurately respond to them
   if (firstUser == 8 &&
       secondUser == 1 &&
       thirdUser == 6)
@@ -965,6 +970,7 @@ function forkPlay()
     }
   }
 
+  // makes the play
   if (forkPlayed)
   {
     var cpuId = cpuChoice + forkPlayed;
@@ -974,12 +980,17 @@ function forkPlay()
     checkWinningCondition();
   }
 
+  // tells calling function if play was made here
   return forkPlayed;
 }
 
+// responds to horse pattern
 function horsePlay()
 {
+  // boolean if play made
   var horseRes = 0;
+
+  // checks location of empty square
   if (checkLocationStatus(6) == 0)
   {
     var horseRes = 6; 
@@ -989,6 +1000,7 @@ function horsePlay()
     var horseRes = 9;
   }
 
+  // makes play
   if (horseRes)
   {
     var cpuId = cpuChoice + horseRes;
@@ -998,13 +1010,17 @@ function horsePlay()
     checkWinningCondition();
   }
 
+  // tells calling function if play was made here
   return horseRes;
 }
 
+// responds to diagonal pattern
 function diagonalPlay()
 {
+  // boolean if play made
   var diagPlay = 0;
   
+  // checks for empty squares to play
   if (checkLocationStatus(6) == 0)
   {
     diagPlay = 6;
@@ -1014,6 +1030,7 @@ function diagonalPlay()
     diagPlay = 4;
   }
 
+  // makes play
   if (diagPlay)
   {
     var cpuId = cpuChoice + diagPlay;
@@ -1023,12 +1040,17 @@ function diagonalPlay()
     checkWinningCondition();
   }
 
+  // tells calling function if play was made here
   return diagPlay;
 }
 
+// responds to tree pattern
 function treePlay()
 {
+  // boolean whether play is made
   var treePlayed = 0;
+
+  // checks for empty square to play
   if (checkLocationStatus(1) == 0)
   {
     treePlayed = 1;
@@ -1038,6 +1060,7 @@ function treePlay()
     treePlayed = 7;
   }
 
+  // makes the play
   if (treePlayed)
   {
     var cpuId = cpuChoice + treePlayed;
@@ -1046,5 +1069,6 @@ function treePlay()
     recordMove(treePlayed, "cpu");
   }
 
+  // tells calling function if play was made here
   return treePlayed;
 }
