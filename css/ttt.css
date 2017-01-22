@@ -55,36 +55,27 @@ body
 
 .verdict
 {
-  display: none;
+  display: flex;
   flex-direction: row;
   justify-content: center;
   font-size: 3.25em;
 
 }
-/*#x
+#x
 {
   display: none;
-  flex-direction: row;
-  justify-content: center;
-  font-size: 3.25em;
 }
 
 #o
 {
   display: none;
-  flex-direction: row;
-  justify-content: center;
-  font-size: 3.25em;
 }
 
 #tie
 {
   display: none;
-  flex-direction: row;
-  justify-content: center;
-  font-size: 3.25em;
 }
-*/
+
 
 #board
 {
