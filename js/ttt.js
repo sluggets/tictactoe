@@ -48,16 +48,6 @@ document.addEventListener("DOMContentLoaded", function() {
   secondUser = 0;
   thirdUser = 0;
 
-  // selects grid class for masonry grid layout library
-  var elem = document.querySelector('.grid');
-  
-  // sets up masonry grid
-  var msnry = new Masonry(elem, {
-    itemSelector: '.grid-item',
-    columnWidth: 80,
-    gutter: 1.5
-  });
-
   // grabs button ids for selecting player letter
   var xchoice = document.getElementById("x-button");
   var ochoice = document.getElementById("o-button");
@@ -451,8 +441,9 @@ function playComputerTurn(userLocNum)
 // resetGame()
 function triggerEndGame(str)
 {
+  console.log("str: " + str);
   var winningElem = document.getElementById(str); 
-  winningElem.style.display = "block";
+  winningElem.style.display = "flex";
   resetGame();
 }
 
