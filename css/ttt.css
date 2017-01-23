@@ -1,7 +1,9 @@
 body
 {
   font-size: 16px;
-  background-color: #4b1d3f;
+  background-color: #d4f4dd;
+  color: #0e7c7b;
+  font-family: 'Permanent Marker', cursive;
 }
 
 #choose1
@@ -16,17 +18,17 @@ body
   top: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(23, 190, 187, 0.8);
+  color: #0e7c7b;
+  background-color: rgba(212, 244, 221, 0.8);
 }
 
 #question
 {
   display: flex;
   flex-direction: row;
-  /*width: 300px;
-  height: 20px;*/
   font-size: 3.25em;
   justify-content: center;
+  font-family: 'Permanent Marker', cursive;
 }
 
 #buttons
@@ -36,14 +38,10 @@ body
   justify-content: center;
 }
 
-/*#choose1 p 
+.choose-button
 {
-  width: 300px;
-  height: 20px;
-  margin: auto;
-  font-size: 1.25em;
-}*/
-
+  background-color: #d62246;
+}
 
 .choose-button
 {
@@ -51,6 +49,10 @@ body
   height: 75px;
   margin: 15px;
   font-size: 3em;
+  border-radius: 17px;
+  border: 0;
+  box-shadow: inset 0px 0px 11px 3px #9a1832;
+  font-family: 'Permanent Marker', cursive;
 }
 
 .verdict
@@ -59,8 +61,8 @@ body
   flex-direction: row;
   justify-content: center;
   font-size: 3.25em;
-
 }
+
 #x
 {
   display: none;
@@ -89,7 +91,6 @@ body
 {
   display: flex;
   flex-direction: row;
-  /*font-size: 3.25em;*/
   justify-content: center;
 }
 
@@ -98,6 +99,9 @@ body
   display: none;
   text-align: center;
   font-size: 11em;
+  line-height: 200px;
+  width: 200px;
+  height: 200px;
 }
 
 .grid-item
@@ -106,6 +110,9 @@ body
   height: 200px;
   background-color:#17bebb;  
   margin: 5px;
-  color: black;
+  color: #0e7c7b;
+  /*font-family:'Bungee Shade', cursive;*/
+  box-shadow: 5px 5px 17px #0e7c7b;
+  text-shadow: 1px -1px 4px #0e7c7b;
 }
 
